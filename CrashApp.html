@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<!-- saved from url=(0042)file:///Users/andre/Downloads/index_2.html -->
-<html lang="de"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-
+<html lang="de">
+<head>
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#030712">
 <title>CrashApp</title>
-<link rel="preconnect" href="https://fonts.googleapis.com/">
-<link href="./CrashApp_files/css2" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
   html, body { background: #030712; font-family: 'DM Sans', sans-serif; overscroll-behavior: none; min-height: 100vh; }
@@ -194,8 +194,8 @@
 
 <!-- NAV TOGGLE -->
 <div class="nav-toggle">
-  <button class="nav-btn active-user" id="btnUser" onclick="showView(&#39;user&#39;)">NUTZER</button>
-  <button class="nav-btn" id="btnGutachter" onclick="showView(&#39;gutachter&#39;)">GUTACHTER</button>
+  <button class="nav-btn active-user" id="btnUser" onclick="showView('user')">NUTZER</button>
+  <button class="nav-btn" id="btnGutachter" onclick="showView('gutachter')">GUTACHTER</button>
 </div>
 
 <!-- ═══════════════════════════════════════════
@@ -205,7 +205,7 @@
   <div class="shell">
     <div class="phone">
       <div class="statusbar">
-        <span id="clock">16:57</span>
+        <span id="clock">09:41</span>
         <span class="logo">CRASH<span>APP</span></span>
         <span>●●●</span>
       </div>
@@ -219,42 +219,7 @@
           <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
         </div>
       </div>
-      <div class="content" id="screenContent">
-  <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:75vh;text-align:center;animation:fadeUp .4s ease">
-    <div style="font-size:10px;color:var(--red);font-family:&#39;DM Mono&#39;,monospace;letter-spacing:.16em;text-transform:uppercase;margin-bottom:10px">KI-gestützte Unfallhilfe</div>
-    <div style="font-family:&#39;Bebas Neue&#39;;font-size:58px;letter-spacing:.04em;color:var(--text);line-height:.9;margin-bottom:8px">CRASH<span style="color:var(--red)">APP</span></div>
-    <div style="color:var(--muted);font-size:14px;line-height:1.7;margin-bottom:40px">Unfall passiert. App öffnen.<br>Problem gelöst.</div>
-
-    <div style="position:relative;width:190px;height:190px;margin-bottom:44px">
-      <div class="pulse-ring" style="animation:pulseRing 2.2s ease-out 0s infinite"></div>
-      <div class="pulse-ring" style="animation:pulseRing 2.2s ease-out .65s infinite"></div>
-      <div class="pulse-ring" style="animation:pulseRing 2.2s ease-out 1.3s infinite"></div>
-      <button class="big-red-btn" onclick="goTo(&#39;safety&#39;)">
-        <span style="font-size:38px;line-height:1">🚨</span>
-        <span style="font-family:&#39;Bebas Neue&#39;;font-size:24px;color:#fff;letter-spacing:.06em;margin-top:6px">UNFALL</span>
-        <span style="font-family:&#39;Bebas Neue&#39;;font-size:14px;color:rgba(255,255,255,.65);letter-spacing:.1em">MELDEN</span>
-      </button>
-    </div>
-
-    <div class="grid3" style="width:100%">
-      
-      <div class="card" style="padding:14px 10px;text-align:center;margin-bottom:0">
-        <div style="font-size:22px;margin-bottom:4px">⚡</div>
-        <div style="font-size:14px;font-weight:700;color:var(--text)">60 Sek.</div>
-        <div style="font-size:10px;color:var(--muted);margin-top:2px">KI-Analyse</div>
-      </div>
-      <div class="card" style="padding:14px 10px;text-align:center;margin-bottom:0">
-        <div style="font-size:22px;margin-bottom:4px">👥</div>
-        <div style="font-size:14px;font-weight:700;color:var(--text)">3 Partner</div>
-        <div style="font-size:10px;color:var(--muted);margin-top:2px">Verfügbar</div>
-      </div>
-      <div class="card" style="padding:14px 10px;text-align:center;margin-bottom:0">
-        <div style="font-size:22px;margin-bottom:4px">🆓</div>
-        <div style="font-size:14px;font-weight:700;color:var(--text)">Kostenlos</div>
-        <div style="font-size:10px;color:var(--muted);margin-top:2px">Für Nutzer</div>
-      </div>
-    </div>
-  </div></div>
+      <div class="content" id="screenContent"></div>
       <div class="home-indicator"><div></div></div>
     </div>
   </div>
@@ -267,21 +232,21 @@
   <div class="login-wrap">
     <div class="login-box">
       <div style="text-align:center;margin-bottom:28px">
-        <div style="font-family:&#39;Bebas Neue&#39;;font-size:44px;letter-spacing:.04em;color:var(--text)">CRASH<span style="color:var(--red)">APP</span></div>
-        <div style="font-size:11px;color:var(--blue);font-family:&#39;DM Mono&#39;,monospace;letter-spacing:.12em;text-transform:uppercase;margin-top:6px">Gutachter Portal</div>
+        <div style="font-family:'Bebas Neue';font-size:44px;letter-spacing:.04em;color:var(--text)">CRASH<span style="color:var(--red)">APP</span></div>
+        <div style="font-size:11px;color:var(--blue);font-family:'DM Mono',monospace;letter-spacing:.12em;text-transform:uppercase;margin-top:6px">Gutachter Portal</div>
       </div>
       <div class="label">Anmeldung</div>
       <input class="inp" id="loginEmail" type="email" placeholder="E-Mail Adresse">
-      <input class="inp" id="loginPw" type="password" placeholder="Passwort" onkeydown="if(event.key===&#39;Enter&#39;)doLogin()">
+      <input class="inp" id="loginPw" type="password" placeholder="Passwort" onkeydown="if(event.key==='Enter')doLogin()">
       <div id="loginError" class="hidden" style="background:rgba(239,68,68,.1);border:1px solid var(--red);border-radius:8px;padding:10px 14px;margin-bottom:12px;color:var(--red);font-size:13px">
         E-Mail oder Passwort falsch.
       </div>
       <button class="btn btn-blue" onclick="doLogin()">Anmelden</button>
       <div style="margin-top:24px;background:#0d1117;border-radius:10px;padding:14px;border:1px solid var(--border)">
         <div class="label" style="margin-bottom:8px">Test-Zugänge</div>
-        <button onclick="fillLogin(&#39;gutachter@outlook.de&#39;)" style="display:block;width:100%;text-align:left;background:none;border:none;cursor:pointer;padding:4px 0;color:var(--blue);font-size:12px;font-family:&#39;DM Mono&#39;,monospace">Test Gutachter ↗</button>
-        <button onclick="fillLogin(&#39;andre.ulbrich@outlook.de&#39;)" style="display:block;width:100%;text-align:left;background:none;border:none;cursor:pointer;padding:4px 0;color:var(--blue);font-size:12px;font-family:&#39;DM Mono&#39;,monospace">Andre Ulbrich ↗</button>
-        <button onclick="fillLogin(&#39;rezan.bali@outlook.de&#39;)" style="display:block;width:100%;text-align:left;background:none;border:none;cursor:pointer;padding:4px 0;color:var(--blue);font-size:12px;font-family:&#39;DM Mono&#39;,monospace">Rezan Bali ↗</button>
+        <button onclick="fillLogin('gutachter@outlook.de')" style="display:block;width:100%;text-align:left;background:none;border:none;cursor:pointer;padding:4px 0;color:var(--blue);font-size:12px;font-family:'DM Mono',monospace">Test Gutachter ↗</button>
+        <button onclick="fillLogin('andre.ulbrich@outlook.de')" style="display:block;width:100%;text-align:left;background:none;border:none;cursor:pointer;padding:4px 0;color:var(--blue);font-size:12px;font-family:'DM Mono',monospace">Andre Ulbrich ↗</button>
+        <button onclick="fillLogin('rezan.bali@outlook.de')" style="display:block;width:100%;text-align:left;background:none;border:none;cursor:pointer;padding:4px 0;color:var(--blue);font-size:12px;font-family:'DM Mono',monospace">Rezan Bali ↗</button>
         <div style="font-size:10px;color:#374151;margin-top:6px">Passwort: CrashApp2026!</div>
       </div>
     </div>
@@ -296,8 +261,8 @@
     <div class="dash-inner">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px">
         <div>
-          <div style="font-family:&#39;Bebas Neue&#39;;font-size:36px;color:var(--text);letter-spacing:.04em;line-height:.9">CRASH<span style="color:var(--blue)">APP</span></div>
-          <div style="font-size:11px;color:var(--blue);font-family:&#39;DM Mono&#39;,monospace;letter-spacing:.1em;text-transform:uppercase;margin-top:4px">Gutachter Portal</div>
+          <div style="font-family:'Bebas Neue';font-size:36px;color:var(--text);letter-spacing:.04em;line-height:.9">CRASH<span style="color:var(--blue)">APP</span></div>
+          <div style="font-size:11px;color:var(--blue);font-family:'DM Mono',monospace;letter-spacing:.1em;text-transform:uppercase;margin-top:4px">Gutachter Portal</div>
           <div style="font-size:13px;color:var(--muted);margin-top:4px" id="dashWelcome">Willkommen</div>
         </div>
         <button onclick="doLogout()" style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:7px 14px;cursor:pointer;color:var(--muted);font-size:12px">Abmelden</button>
@@ -996,6 +961,5 @@ function updateStatus(id, newStatus) {
 // ══════════════════════════════════════════════════════════
 renderStep();
 </script>
-
-
-</body></html>
+</body>
+</html>
