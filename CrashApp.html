@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+<!-- saved from url=(0042)file:///Users/andre/Downloads/index_2.html -->
+<html lang="de"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#030712">
+<title>CrashApp</title>
+<link rel="preconnect" href="https://fonts.googleapis.com/">
+<link href="./CrashApp_files/css2" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html, body { background: #030712; font-family: 'DM Sans', sans-serif; overscroll-behavior: none; min-height: 100vh; }
+  ::-webkit-scrollbar { width: 3px; }
+  ::-webkit-scrollbar-track { background: #0a0f1a; }
+  ::-webkit-scrollbar-thumb { background: #1f2937; border-radius: 99px; }
+
+  :root {
+    --bg: #0a0f1a; --card: #111827; --border: #1f2937;
+    --text: #f9fafb; --muted: #6b7280; --red: #ef4444;
+    --green: #10b981; --blue: #3b82f6; --orange: #f97316;
+  }
+
+  @keyframes fadeUp { from { opacity:0; transform:translateY(18px); } to { opacity:1; transform:translateY(0); } }
+  @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+  @keyframes pulseRing { 0% { transform:scale(1); opacity:.55; } 100% { transform:scale(2.4); opacity:0; } }
+  @keyframes spin { to { transform:rotate(360deg); } }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.25} }
+  @keyframes slideIn { from { opacity:0; transform:translateX(-10px); } to { opacity:1; transform:translateX(0); } }
+  @keyframes shake { 0%,100%{transform:translateX(0)} 20%,60%{transform:translateX(-6px)} 40%,80%{transform:translateX(6px)} }
+  @keyframes countUp { from { opacity:0; transform:scale(.85); } to { opacity:1; transform:scale(1); } }
+  @keyframes scanAnim { 0%{top:0%} 100%{top:100%} }
+
+  .shell {
+    min-height: 100vh; background: #030712;
+    display: flex; align-items: flex-start; justify-content: center; padding: 16px 0 40px;
+  }
+  .phone {
+    width: 100%; max-width: 420px; background: var(--bg);
+    min-height: calc(100vh - 32px); border-radius: 24px;
+    box-shadow: 0 0 0 1px #1f2937, 0 32px 64px rgba(0,0,0,.6);
+    display: flex; flex-direction: column; overflow: hidden; position: relative;
+  }
+  .statusbar {
+    display: flex; justify-content: space-between; padding: 14px 22px 0;
+    font-size: 12px; color: #374151; font-family: 'DM Mono', monospace;
+  }
+  .statusbar .logo { color: var(--red); font-weight: 700; letter-spacing: .06em; }
+  .statusbar .logo span { color: var(--text); }
+  .content { flex: 1; padding: 16px 22px 22px; overflow-y: auto; }
+  .home-indicator { padding: 10px; display: flex; justify-content: center; }
+  .home-indicator div { width: 100px; height: 3px; background: var(--border); border-radius: 99px; }
+
+  .nav-toggle {
+    position: fixed; top: 12px; right: 12px; z-index: 9999; display: flex; gap: 6px;
+  }
+  .nav-btn {
+    background: #1f2937; color: #fff; border: none; border-radius: 8px;
+    padding: 6px 12px; font-size: 11px; cursor: pointer;
+    font-family: 'DM Mono', monospace; letter-spacing: .06em; transition: background .2s;
+  }
+  .nav-btn.active-user { background: var(--red); }
+  .nav-btn.active-gutachter { background: var(--blue); }
+
+  .back-bar { padding: 10px 22px 0; }
+  .back-btn {
+    background: var(--card); border: 1px solid var(--border); border-radius: 8px;
+    padding: 5px 12px; cursor: pointer; color: var(--muted); font-size: 13px;
+    font-family: 'DM Sans', sans-serif; margin-bottom: 10px;
+  }
+  .progress-bar-wrap { margin-bottom: 0; }
+  .progress-meta { display: flex; justify-content: space-between; margin-bottom: 5px; }
+  .progress-meta span { font-size: 10px; font-family: 'DM Mono', monospace; letter-spacing: .08em; text-transform: uppercase; }
+  .progress-track { height: 3px; background: #0d1117; border-radius: 99px; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg,#ef4444,#f97316); border-radius: 99px; transition: width .5s cubic-bezier(.4,0,.2,1); }
+
+  .label {
+    font-size: 10px; color: #4b5563; letter-spacing: .12em;
+    text-transform: uppercase; font-family: 'DM Mono', monospace; margin-bottom: 10px;
+  }
+  .title { font-family: 'Bebas Neue'; letter-spacing: .04em; color: var(--text); line-height: 1; margin-bottom: 6px; }
+
+  .card {
+    background: var(--card); border-radius: 14px; padding: 18px;
+    border: 1px solid var(--border); margin-bottom: 12px;
+    animation: fadeUp .35s ease both;
+  }
+
+  .btn {
+    width: 100%; padding: 14px 20px; border-radius: 12px; border: none;
+    font-size: 15px; font-weight: 600; cursor: pointer;
+    font-family: 'DM Sans', sans-serif; transition: all .2s; margin-bottom: 8px;
+    display: block;
+  }
+  .btn-primary { background: linear-gradient(135deg,#ef4444,#dc2626); color: #fff; }
+  .btn-secondary { background: var(--card); color: #e5e7eb; border: 1px solid var(--border) !important; }
+  .btn-ghost { background: transparent; color: var(--muted); border: 1px solid var(--border) !important; }
+  .btn-green { background: linear-gradient(135deg,#10b981,#059669); color: #fff; }
+  .btn-blue { background: linear-gradient(135deg,#3b82f6,#2563eb); color: #fff; }
+  .btn:disabled { opacity: .4; cursor: not-allowed; }
+
+  .inp {
+    width: 100%; padding: 13px 14px; margin-bottom: 10px;
+    background: #0d1117; border: 1px solid var(--border);
+    border-radius: 10px; color: var(--text); font-size: 15px;
+    font-family: 'DM Sans', sans-serif; outline: none; transition: border-color .2s;
+  }
+  .inp:focus { border-color: var(--red); }
+
+  .big-red-btn {
+    position: absolute; inset: 0; border-radius: 50%;
+    background: radial-gradient(circle, #ef4444 0%, #b91c1c 100%);
+    border: none; cursor: pointer;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    box-shadow: 0 0 50px rgba(239,68,68,.35), 0 0 100px rgba(239,68,68,.1);
+    transition: transform .15s;
+  }
+  .big-red-btn:active { transform: scale(.95); }
+  .pulse-ring {
+    position: absolute; inset: 0; border-radius: 50%;
+    border: 2px solid #ef4444; opacity: 0;
+  }
+
+  .foto-btn {
+    width: 100%; background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 14px 16px; cursor: pointer;
+    display: flex; align-items: center; gap: 12px; text-align: left;
+    transition: all .25s; margin-bottom: 8px;
+  }
+  .foto-btn.done { background: rgba(16,185,129,.08); border-color: var(--green); }
+
+  .status-badge {
+    font-size: 10px; font-weight: 700; padding: 3px 8px;
+    border-radius: 99px; font-family: 'DM Mono', monospace;
+    letter-spacing: .06em; text-transform: uppercase;
+  }
+
+  .case-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 14px; padding: 16px; cursor: pointer; text-align: left;
+    width: 100%; transition: border-color .2s, transform .15s;
+    margin-bottom: 10px; display: block;
+  }
+  .case-card:hover { border-color: var(--blue); transform: translateY(-1px); }
+
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0 10px; }
+  .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+  .grid4 { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; }
+
+  .scan-container {
+    position: relative; background: #0d1117; border-radius: 10px;
+    height: 150px; overflow: hidden; display: flex; align-items: center; justify-content: center;
+    margin-bottom: 20px;
+  }
+  .scan-line {
+    position: absolute; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg,transparent,#ef4444,transparent);
+    box-shadow: 0 0 14px #ef4444, 0 0 28px rgba(239,68,68,.4);
+    transition: top .03s linear;
+  }
+
+  .email-box {
+    background: #0d1117; border-radius: 10px; padding: 14px;
+    font-size: 13px; color: var(--muted); line-height: 1.8;
+    font-family: 'DM Mono', monospace;
+  }
+
+  /* Login */
+  .login-wrap {
+    min-height: 100vh; background: #030712;
+    display: flex; align-items: center; justify-content: center; padding: 20px;
+  }
+  .login-box {
+    width: 100%; max-width: 400px; background: var(--bg); border-radius: 24px;
+    padding: 40px 32px; border: 1px solid var(--border);
+    box-shadow: 0 32px 64px rgba(0,0,0,.5); animation: fadeUp .4s ease;
+  }
+
+  /* Dashboard */
+  .dash-wrap { min-height: 100vh; background: #030712; padding: 20px 16px 40px; }
+  .dash-inner { max-width: 680px; margin: 0 auto; }
+
+  .filter-tab {
+    padding: 7px 14px; border-radius: 99px; border: 1px solid var(--border);
+    background: transparent; color: var(--muted); font-size: 12px; font-weight: 600;
+    cursor: pointer; white-space: nowrap; font-family: 'DM Sans', sans-serif;
+    transition: all .2s;
+  }
+  .filter-tab.active { border-color: var(--blue); background: rgba(59,130,246,.1); color: var(--blue); }
+
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+
+<!-- NAV TOGGLE -->
+<div class="nav-toggle">
+  <button class="nav-btn active-user" id="btnUser" onclick="showView(&#39;user&#39;)">NUTZER</button>
+  <button class="nav-btn" id="btnGutachter" onclick="showView(&#39;gutachter&#39;)">GUTACHTER</button>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     USER FLOW
+═══════════════════════════════════════════ -->
+<div id="viewUser">
+  <div class="shell">
+    <div class="phone">
+      <div class="statusbar">
+        <span id="clock">16:57</span>
+        <span class="logo">CRASH<span>APP</span></span>
+        <span>●●●</span>
+      </div>
+      <div id="backBar" class="back-bar hidden">
+        <button class="back-btn" onclick="goBack()">← zurück</button>
+        <div class="progress-bar-wrap">
+          <div class="progress-meta">
+            <span style="color:var(--muted)" id="stepLabel">Schritt 1 / 8</span>
+            <span style="color:var(--red)" id="stepPct">0%</span>
+          </div>
+          <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+        </div>
+      </div>
+      <div class="content" id="screenContent">
+  <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:75vh;text-align:center;animation:fadeUp .4s ease">
+    <div style="font-size:10px;color:var(--red);font-family:&#39;DM Mono&#39;,monospace;letter-spacing:.16em;text-transform:uppercase;margin-bottom:10px">KI-gestützte Unfallhilfe</div>
+    <div style="font-family:&#39;Bebas Neue&#39;;font-size:58px;letter-spacing:.04em;color:var(--text);line-height:.9;margin-bottom:8px">CRASH<span style="color:var(--red)">APP</span></div>
+    <div style="color:var(--muted);font-size:14px;line-height:1.7;margin-bottom:40px">Unfall passiert. App öffnen.<br>Problem gelöst.</div>
+
+    <div style="position:relative;width:190px;height:190px;margin-bottom:44px">
+      <div class="pulse-ring" style="animation:pulseRing 2.2s ease-out 0s infinite"></div>
+      <div class="pulse-ring" style="animation:pulseRing 2.2s ease-out .65s infinite"></div>
+      <div class="pulse-ring" style="animation:pulseRing 2.2s ease-out 1.3s infinite"></div>
+      <button class="big-red-btn" onclick="goTo(&#39;safety&#39;)">
+        <span style="font-size:38px;line-height:1">🚨</span>
+        <span style="font-family:&#39;Bebas Neue&#39;;font-size:24px;color:#fff;letter-spacing:.06em;margin-top:6px">UNFALL</span>
+        <span style="font-family:&#39;Bebas Neue&#39;;font-size:14px;color:rgba(255,255,255,.65);letter-spacing:.1em">MELDEN</span>
+      </button>
+    </div>
+
+    <div class="grid3" style="width:100%">
+      
+      <div class="card" style="padding:14px 10px;text-align:center;margin-bottom:0">
+        <div style="font-size:22px;margin-bottom:4px">⚡</div>
+        <div style="font-size:14px;font-weight:700;color:var(--text)">60 Sek.</div>
+        <div style="font-size:10px;color:var(--muted);margin-top:2px">KI-Analyse</div>
+      </div>
+      <div class="card" style="padding:14px 10px;text-align:center;margin-bottom:0">
+        <div style="font-size:22px;margin-bottom:4px">👥</div>
+        <div style="font-size:14px;font-weight:700;color:var(--text)">3 Partner</div>
+        <div style="font-size:10px;color:var(--muted);margin-top:2px">Verfügbar</div>
+      </div>
+      <div class="card" style="padding:14px 10px;text-align:center;margin-bottom:0">
+        <div style="font-size:22px;margin-bottom:4px">🆓</div>
+        <div style="font-size:14px;font-weight:700;color:var(--text)">Kostenlos</div>
+        <div style="font-size:10px;color:var(--muted);margin-top:2px">Für Nutzer</div>
+      </div>
+    </div>
+  </div></div>
+      <div class="home-indicator"><div></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     GUTACHTER LOGIN
+═══════════════════════════════════════════ -->
+<div id="viewLogin" class="hidden">
+  <div class="login-wrap">
+    <div class="login-box">
+      <div style="text-align:center;margin-bottom:28px">
+        <div style="font-family:&#39;Bebas Neue&#39;;font-size:44px;letter-spacing:.04em;color:var(--text)">CRASH<span style="color:var(--red)">APP</span></div>
+        <div style="font-size:11px;color:var(--blue);font-family:&#39;DM Mono&#39;,monospace;letter-spacing:.12em;text-transform:uppercase;margin-top:6px">Gutachter Portal</div>
+      </div>
+      <div class="label">Anmeldung</div>
+      <input class="inp" id="loginEmail" type="email" placeholder="E-Mail Adresse">
+      <input class="inp" id="loginPw" type="password" placeholder="Passwort" onkeydown="if(event.key===&#39;Enter&#39;)doLogin()">
+      <div id="loginError" class="hidden" style="background:rgba(239,68,68,.1);border:1px solid var(--red);border-radius:8px;padding:10px 14px;margin-bottom:12px;color:var(--red);font-size:13px">
+        E-Mail oder Passwort falsch.
+      </div>
+      <button class="btn btn-blue" onclick="doLogin()">Anmelden</button>
+      <div style="margin-top:24px;background:#0d1117;border-radius:10px;padding:14px;border:1px solid var(--border)">
+        <div class="label" style="margin-bottom:8px">Test-Zugänge</div>
+        <button onclick="fillLogin(&#39;gutachter@outlook.de&#39;)" style="display:block;width:100%;text-align:left;background:none;border:none;cursor:pointer;padding:4px 0;color:var(--blue);font-size:12px;font-family:&#39;DM Mono&#39;,monospace">Test Gutachter ↗</button>
+        <button onclick="fillLogin(&#39;andre.ulbrich@outlook.de&#39;)" style="display:block;width:100%;text-align:left;background:none;border:none;cursor:pointer;padding:4px 0;color:var(--blue);font-size:12px;font-family:&#39;DM Mono&#39;,monospace">Andre Ulbrich ↗</button>
+        <button onclick="fillLogin(&#39;rezan.bali@outlook.de&#39;)" style="display:block;width:100%;text-align:left;background:none;border:none;cursor:pointer;padding:4px 0;color:var(--blue);font-size:12px;font-family:&#39;DM Mono&#39;,monospace">Rezan Bali ↗</button>
+        <div style="font-size:10px;color:#374151;margin-top:6px">Passwort: CrashApp2026!</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     GUTACHTER DASHBOARD
+═══════════════════════════════════════════ -->
+<div id="viewDashboard" class="hidden">
+  <div class="dash-wrap">
+    <div class="dash-inner">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px">
+        <div>
+          <div style="font-family:&#39;Bebas Neue&#39;;font-size:36px;color:var(--text);letter-spacing:.04em;line-height:.9">CRASH<span style="color:var(--blue)">APP</span></div>
+          <div style="font-size:11px;color:var(--blue);font-family:&#39;DM Mono&#39;,monospace;letter-spacing:.1em;text-transform:uppercase;margin-top:4px">Gutachter Portal</div>
+          <div style="font-size:13px;color:var(--muted);margin-top:4px" id="dashWelcome">Willkommen</div>
+        </div>
+        <button onclick="doLogout()" style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:7px 14px;cursor:pointer;color:var(--muted);font-size:12px">Abmelden</button>
+      </div>
+
+      <!-- Stats -->
+      <div class="grid4" style="margin-bottom:20px" id="dashStats"></div>
+
+      <!-- Filter -->
+      <div style="display:flex;gap:6px;margin-bottom:16px;overflow-x:auto" id="filterTabs"></div>
+
+      <!-- Cases -->
+      <div id="casesList"></div>
+
+      <!-- Detail -->
+      <div id="caseDetail" class="hidden"></div>
+
+      <button onclick="renderDashboard()" style="margin-top:16px;width:100%;background:transparent;border:1px solid var(--border);border-radius:10px;padding:10px;color:var(--muted);cursor:pointer;font-size:12px">🔄 Aktualisieren</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════════════
+const STEPS = ['home','safety','emergency','kundendaten','fahrzeug','fotos','gps','analyse','ergebnis','bestaetigung'];
+let currentStep = 0;
+let scanTimer = null;
+let gpsTimer = null;
+
+const state = {
+  vorname:'', nachname:'', email:'', strasse:'', plz:'', ort:'',
+  fahrzeugnummer:'', versichert:null, versicherung:'',
+  fotos:{ front:false, seite:false, kennzeichen:false, gesamt:false },
+  fotoCount:0,
+  gpsReady:false, gpsLat:'52.520008', gpsLng:'13.404954', gpsAdresse:'Berlin, Deutschland',
+  analyseDone:false, schaetzung:null,
+  kundenId:null,
+  currentFilter:'alle',
+  selectedCaseId:null,
+  gutachterSession:null,
+  caseNotiz:'',
+};
+
+const GUTACHTER_ACCOUNTS = {
+  'gutachter@outlook.de': { password:'CrashApp2026!', name:'Test Gutachter' },
+  'andre.ulbrich@outlook.de': { password:'CrashApp2026!', name:'Andre Ulbrich' },
+  'rezan.bali@outlook.de': { password:'CrashApp2026!', name:'Rezan Bali' },
+};
+
+const STATUS_CFG = {
+  neu:{ label:'Neu', color:'#ef4444', bg:'rgba(239,68,68,.1)' },
+  zugewiesen:{ label:'Zugewiesen', color:'#f97316', bg:'rgba(249,115,22,.1)' },
+  in_bearbeitung:{ label:'In Bearbeitung', color:'#3b82f6', bg:'rgba(59,130,246,.1)' },
+  abgeschlossen:{ label:'Abgeschlossen', color:'#10b981', bg:'rgba(16,185,129,.1)' },
+};
+
+let cases = [
+  { id:'1', kunden_id:'CA-DEMO001', created_at:new Date().toISOString(),
+    vorname:'Max', nachname:'Mustermann', email:'max@example.de',
+    strasse:'Hauptstraße 12', plz:'10115', ort:'Berlin',
+    fahrzeugnummer:'B-MM 1234', versichert:true, versicherung:'Allianz',
+    unfall_datum:new Date().toISOString().split('T')[0], unfall_uhrzeit:'14:32',
+    unfall_ort:'Friedrichstraße 43, Berlin', unfall_lat:'52.5200', unfall_lng:'13.4050',
+    schaden_min:1800, schaden_max:3200, schaden_bereiche:['Stoßstange','Karosserie','Anbauteile'],
+    status:'neu', notiz:'' },
+  { id:'2', kunden_id:'CA-DEMO002', created_at:new Date(Date.now()-7200000).toISOString(),
+    vorname:'Anna', nachname:'Schmidt', email:'anna@example.de',
+    strasse:'Berliner Allee 88', plz:'40210', ort:'Düsseldorf',
+    fahrzeugnummer:'D-AS 5678', versichert:true, versicherung:'HUK Coburg',
+    unfall_datum:new Date().toISOString().split('T')[0], unfall_uhrzeit:'09:15',
+    unfall_ort:'Berliner Allee 88, Düsseldorf', unfall_lat:'51.2217', unfall_lng:'6.7762',
+    schaden_min:2400, schaden_max:4100, schaden_bereiche:['Frontstoßstange','Motorhaube','Scheinwerfer'],
+    status:'in_bearbeitung', notiz:'Besichtigung morgen 10 Uhr' },
+];
+
+// ══════════════════════════════════════════════════════════
+// CLOCK
+// ══════════════════════════════════════════════════════════
+function updateClock() {
+  const el = document.getElementById('clock');
+  if(el) el.textContent = new Date().toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'});
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+// ══════════════════════════════════════════════════════════
+// VIEW ROUTING
+// ══════════════════════════════════════════════════════════
+function showView(v) {
+  document.getElementById('viewUser').classList.add('hidden');
+  document.getElementById('viewLogin').classList.add('hidden');
+  document.getElementById('viewDashboard').classList.add('hidden');
+  document.getElementById('btnUser').className = 'nav-btn';
+  document.getElementById('btnGutachter').className = 'nav-btn';
+
+  if(v === 'user') {
+    document.getElementById('viewUser').classList.remove('hidden');
+    document.getElementById('btnUser').className = 'nav-btn active-user';
+    renderStep();
+  } else if(v === 'gutachter') {
+    if(state.gutachterSession) {
+      document.getElementById('viewDashboard').classList.remove('hidden');
+      document.getElementById('btnGutachter').className = 'nav-btn active-gutachter';
+      renderDashboard();
+    } else {
+      document.getElementById('viewLogin').classList.remove('hidden');
+      document.getElementById('btnGutachter').className = 'nav-btn active-gutachter';
+    }
+  }
+}
+
+// ══════════════════════════════════════════════════════════
+// USER FLOW NAVIGATION
+// ══════════════════════════════════════════════════════════
+function goTo(stepName) {
+  if(scanTimer) { clearInterval(scanTimer); clearTimeout(scanTimer); scanTimer=null; }
+  if(gpsTimer) { clearTimeout(gpsTimer); gpsTimer=null; }
+  currentStep = STEPS.indexOf(stepName);
+  renderStep();
+}
+
+function goBack() {
+  if(currentStep > 0) { currentStep--; renderStep(); }
+}
+
+function goNext() {
+  if(currentStep < STEPS.length-1) { currentStep++; renderStep(); }
+}
+
+function renderStep() {
+  const step = STEPS[currentStep];
+  const backBar = document.getElementById('backBar');
+  const fill = document.getElementById('progressFill');
+  const lbl = document.getElementById('stepLabel');
+  const pct = document.getElementById('stepPct');
+
+  if(step === 'home' || step === 'bestaetigung') {
+    backBar.classList.add('hidden');
+  } else {
+    backBar.classList.remove('hidden');
+    const pctVal = Math.round((currentStep / (STEPS.length-1)) * 100);
+    fill.style.width = pctVal + '%';
+    lbl.textContent = `Schritt ${currentStep} / ${STEPS.length-1}`;
+    lbl.style.color = 'var(--muted)';
+    pct.textContent = pctVal + '%';
+  }
+
+  const screens = {
+    home: screenHome, safety: screenSafety, emergency: screenEmergency,
+    kundendaten: screenKundendaten, fahrzeug: screenFahrzeug,
+    fotos: screenFotos, gps: screenGPS, analyse: screenAnalyse,
+    ergebnis: screenErgebnis, bestaetigung: screenBestaetigung,
+  };
+  document.getElementById('screenContent').innerHTML = screens[step]();
+  initStepLogic(step);
+}
+
+function initStepLogic(step) {
+  if(step === 'gps') initGPS();
+  if(step === 'analyse') initAnalyse();
+}
+
+// ══════════════════════════════════════════════════════════
+// SCREENS
+// ══════════════════════════════════════════════════════════
+
+function screenHome() {
+  return `
+  <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:75vh;text-align:center;animation:fadeUp .4s ease">
+    <div style="font-size:10px;color:var(--red);font-family:'DM Mono',monospace;letter-spacing:.16em;text-transform:uppercase;margin-bottom:10px">KI-gestützte Unfallhilfe</div>
+    <div style="font-family:'Bebas Neue';font-size:58px;letter-spacing:.04em;color:var(--text);line-height:.9;margin-bottom:8px">CRASH<span style="color:var(--red)">APP</span></div>
+    <div style="color:var(--muted);font-size:14px;line-height:1.7;margin-bottom:40px">Unfall passiert. App öffnen.<br>Problem gelöst.</div>
+
+    <div style="position:relative;width:190px;height:190px;margin-bottom:44px">
+      <div class="pulse-ring" style="animation:pulseRing 2.2s ease-out 0s infinite"></div>
+      <div class="pulse-ring" style="animation:pulseRing 2.2s ease-out .65s infinite"></div>
+      <div class="pulse-ring" style="animation:pulseRing 2.2s ease-out 1.3s infinite"></div>
+      <button class="big-red-btn" onclick="goTo('safety')">
+        <span style="font-size:38px;line-height:1">🚨</span>
+        <span style="font-family:'Bebas Neue';font-size:24px;color:#fff;letter-spacing:.06em;margin-top:6px">UNFALL</span>
+        <span style="font-family:'Bebas Neue';font-size:14px;color:rgba(255,255,255,.65);letter-spacing:.1em">MELDEN</span>
+      </button>
+    </div>
+
+    <div class="grid3" style="width:100%">
+      ${[['⚡','60 Sek.','KI-Analyse'],['👥','3 Partner','Verfügbar'],['🆓','Kostenlos','Für Nutzer']].map(([i,v,l])=>`
+      <div class="card" style="padding:14px 10px;text-align:center;margin-bottom:0">
+        <div style="font-size:22px;margin-bottom:4px">${i}</div>
+        <div style="font-size:14px;font-weight:700;color:var(--text)">${v}</div>
+        <div style="font-size:10px;color:var(--muted);margin-top:2px">${l}</div>
+      </div>`).join('')}
+    </div>
+  </div>`;
+}
+
+function screenSafety() {
+  return `
+  <div style="animation:fadeUp .4s ease">
+    <div class="label">Sicherheitscheck</div>
+    <div class="title" style="font-size:32px;margin-bottom:6px">BIST DU VERLETZT?</div>
+    <p style="color:var(--muted);font-size:14px;line-height:1.6;margin-bottom:24px">Deine Sicherheit hat absolute Priorität.</p>
+    <button onclick="goTo('emergency')" style="width:100%;background:linear-gradient(135deg,#ef4444,#b91c1c);border:none;border-radius:14px;padding:20px 16px;cursor:pointer;display:flex;align-items:center;gap:14px;margin-bottom:12px;text-align:left">
+      <span style="font-size:36px">🚑</span>
+      <div><div style="color:#fff;font-weight:700;font-size:17px">Ja, ich brauche Hilfe</div><div style="color:rgba(255,255,255,.6);font-size:13px;margin-top:2px">Notruf 112 wird angezeigt</div></div>
+    </button>
+    <button onclick="goTo('kundendaten')" style="width:100%;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px 16px;cursor:pointer;display:flex;align-items:center;gap:14px;text-align:left">
+      <span style="font-size:36px">✅</span>
+      <div><div style="color:var(--text);font-weight:700;font-size:17px">Nein, mir geht's gut</div><div style="color:var(--muted);font-size:13px;margin-top:2px">Weiter zur Schadenserfassung</div></div>
+    </button>
+  </div>`;
+}
+
+function screenEmergency() {
+  return `
+  <div style="text-align:center;padding-top:30px;animation:fadeUp .4s ease">
+    <div style="font-size:72px;margin-bottom:20px">🚨</div>
+    <div style="font-family:'Bebas Neue';font-size:44px;color:var(--red);letter-spacing:.04em;margin-bottom:20px">NOTRUF</div>
+    <div class="card" style="text-align:center">
+      <div style="font-family:'Bebas Neue';font-size:80px;color:var(--red);letter-spacing:.1em;animation:blink 1.5s infinite">112</div>
+      <div style="color:var(--muted);font-size:13px">Europäischer Notruf — kostenlos</div>
+    </div>
+    <p style="color:var(--muted);font-size:13px;line-height:1.7;margin:20px 0">Bleib ruhig. Nenne deinen Standort, Anzahl Verletzter und deine Telefonnummer.</p>
+    <button class="btn btn-secondary" onclick="goTo('kundendaten')">Hilfe gerufen — weiter</button>
+  </div>`;
+}
+
+function screenKundendaten() {
+  return `
+  <div style="animation:fadeUp .4s ease">
+    <div class="label">Schritt 1 — Ihre Daten</div>
+    <div class="title" style="font-size:30px;margin-bottom:20px">PERSÖNLICHE DATEN</div>
+    <div class="grid2">
+      <input class="inp" id="f_vorname" placeholder="Vorname" value="${state.vorname}" oninput="state.vorname=this.value;checkKunden()">
+      <input class="inp" id="f_nachname" placeholder="Nachname" value="${state.nachname}" oninput="state.nachname=this.value;checkKunden()">
+    </div>
+    <input class="inp" id="f_email" type="email" placeholder="E-Mail Adresse" value="${state.email}" oninput="state.email=this.value;checkKunden()">
+    <input class="inp" id="f_strasse" placeholder="Straße & Hausnummer" value="${state.strasse}" oninput="state.strasse=this.value;checkKunden()">
+    <div class="grid2">
+      <input class="inp" id="f_plz" placeholder="PLZ" value="${state.plz}" oninput="state.plz=this.value;checkKunden()">
+      <input class="inp" id="f_ort" placeholder="Ort" value="${state.ort}" oninput="state.ort=this.value;checkKunden()">
+    </div>
+    <button class="btn btn-primary" id="btnKundenWeiter" onclick="goTo('fahrzeug')" ${(!state.vorname||!state.nachname||!state.email||!state.strasse||!state.plz||!state.ort)?'disabled':''}>Weiter ➜</button>
+  </div>`;
+}
+
+function checkKunden() {
+  const btn = document.getElementById('btnKundenWeiter');
+  if(btn) btn.disabled = !state.vorname||!state.nachname||!state.email||!state.strasse||!state.plz||!state.ort;
+}
+
+function screenFahrzeug() {
+  return `
+  <div style="animation:fadeUp .4s ease">
+    <div class="label">Schritt 2 — Fahrzeug</div>
+    <div class="title" style="font-size:30px;margin-bottom:20px">FAHRZEUGDATEN</div>
+    <input class="inp" placeholder="Kennzeichen (z.B. B-AB 1234)" value="${state.fahrzeugnummer}" oninput="state.fahrzeugnummer=this.value;checkFahrzeug()">
+    <div class="label" style="margin-top:4px">Fahrzeug versichert?</div>
+    <div class="grid2" style="margin-bottom:14px">
+      <button onclick="state.versichert='ja';checkFahrzeug();renderStep()" style="padding:14px;border-radius:10px;border:1px solid ${state.versichert==='ja'?'var(--red)':'var(--border)'};background:${state.versichert==='ja'?'rgba(239,68,68,.1)':'var(--card)'};color:${state.versichert==='ja'?'var(--red)':'var(--text)'};font-weight:600;font-size:15px;cursor:pointer">✅ Ja</button>
+      <button onclick="state.versichert='nein';checkFahrzeug();renderStep()" style="padding:14px;border-radius:10px;border:1px solid ${state.versichert==='nein'?'var(--red)':'var(--border)'};background:${state.versichert==='nein'?'rgba(239,68,68,.1)':'var(--card)'};color:${state.versichert==='nein'?'var(--red)':'var(--text)'};font-weight:600;font-size:15px;cursor:pointer">❌ Nein</button>
+    </div>
+    ${state.versichert==='ja'?`<input class="inp" placeholder="Welche Versicherung?" value="${state.versicherung}" oninput="state.versicherung=this.value">`:''}
+    <button class="btn btn-primary" id="btnFahrzeugWeiter" onclick="goTo('fotos')" ${(!state.fahrzeugnummer||!state.versichert)?'disabled':''}>Weiter ➜</button>
+  </div>`;
+}
+
+function checkFahrzeug() {
+  const btn = document.getElementById('btnFahrzeugWeiter');
+  if(btn) btn.disabled = !state.fahrzeugnummer||!state.versichert;
+}
+
+function screenFotos() {
+  const fotoItems = [
+    ['front','📸','Eigener Schaden — Frontansicht'],
+    ['seite','📸','Eigener Schaden — Seitenansicht'],
+    ['kennzeichen','🔢','Kennzeichen des Unfallgegners'],
+    ['gesamt','📍','Gesamtbild der Unfallstelle'],
+  ];
+  return `
+  <div style="animation:fadeUp .4s ease">
+    <div class="label">Schritt 3 — Beweissicherung</div>
+    <div class="title" style="font-size:30px;margin-bottom:6px">FOTOS AUFNEHMEN</div>
+    <p style="color:var(--muted);font-size:13px;line-height:1.6;margin-bottom:18px">Tippe auf jeden Punkt um das Foto zu simulieren.</p>
+    ${fotoItems.map(([key,ico,label],i)=>`
+    <button class="foto-btn ${state.fotos[key]?'done':''}" onclick="takeFoto('${key}')" style="animation:slideIn .3s ease ${i*.08}s both">
+      <span style="font-size:22px">${state.fotos[key]?'✅':ico}</span>
+      <span style="color:${state.fotos[key]?'var(--green)':'var(--text)'};font-size:14px;font-weight:500;flex:1">${label}</span>
+      ${!state.fotos[key]?'<span style="font-size:10px;color:var(--muted);font-family:DM Mono,monospace">TIPPEN</span>':''}
+    </button>`).join('')}
+    <div style="margin-bottom:18px">
+      <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+        <span style="font-size:13px;color:var(--muted)">Fotos gesichert</span>
+        <span style="font-size:13px;color:var(--text);font-weight:600">${state.fotoCount} / 4</span>
+      </div>
+      <div class="progress-track"><div style="height:100%;width:${(state.fotoCount/4)*100}%;background:linear-gradient(90deg,var(--green),#059669);border-radius:99px;transition:width .4s"></div></div>
+    </div>
+    <button class="btn btn-primary" onclick="goTo('gps')" ${state.fotoCount<2?'disabled':''}>
+      ${state.fotoCount<2?`Noch ${2-state.fotoCount} Pflichtfoto(s)`:'Fotos gesichert — weiter ➜'}
+    </button>
+    ${state.fotoCount>=2?'<button class="btn btn-ghost" onclick="goTo(\'gps\')">Weitere überspringen</button>':''}
+  </div>`;
+}
+
+function takeFoto(key) {
+  if(!state.fotos[key]) {
+    state.fotos[key] = true;
+    state.fotoCount++;
+    renderStep();
+  }
+}
+
+function screenGPS() {
+  return `
+  <div style="animation:fadeUp .4s ease">
+    <div class="label">Schritt 4 — Standort</div>
+    <div class="title" style="font-size:30px;margin-bottom:20px">UNFALLORT</div>
+    <div class="card" style="text-align:center;padding:36px 20px;margin-bottom:16px" id="gpsCard">
+      <div style="font-size:48px;animation:spin 2s linear infinite;display:inline-block;margin-bottom:14px" id="gpsIcon">📡</div>
+      <div style="color:var(--text);font-weight:600;margin-bottom:6px" id="gpsStatus">GPS wird ermittelt…</div>
+      <div style="color:var(--muted);font-size:12px;font-family:'DM Mono',monospace" id="gpsCoords">Bitte warte kurz</div>
+    </div>
+    <div class="card" style="margin-bottom:18px">
+      <div class="label">Uhrzeit & Datum</div>
+      <div style="font-family:'Bebas Neue';font-size:28px;color:var(--text);letter-spacing:.04em">${new Date().toLocaleString('de-DE',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'})} Uhr</div>
+      <div style="font-size:11px;color:var(--muted);margin-top:4px">Automatisch erfasst</div>
+    </div>
+    <button class="btn btn-primary" id="btnGPSWeiter" onclick="goTo('analyse')" disabled>Warte auf GPS…</button>
+  </div>`;
+}
+
+function initGPS() {
+  state.gpsReady = false;
+  const getPos = () => {
+    const icon = document.getElementById('gpsIcon');
+    const status = document.getElementById('gpsStatus');
+    const coords = document.getElementById('gpsCoords');
+    const btn = document.getElementById('btnGPSWeiter');
+    if(!icon) return;
+    icon.style.animation = 'none';
+    icon.textContent = '📍';
+    status.textContent = 'Standort gesichert';
+    status.style.color = 'var(--green)';
+    coords.textContent = `${state.gpsLat}° N, ${state.gpsLng}° E — ${state.gpsAdresse}`;
+    coords.style.color = 'var(--muted)';
+    if(btn) { btn.disabled = false; btn.textContent = 'Standort bestätigt — weiter ➜'; }
+    state.gpsReady = true;
+  };
+  if(navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      pos => { state.gpsLat = pos.coords.latitude.toFixed(6); state.gpsLng = pos.coords.longitude.toFixed(6); state.gpsAdresse = 'Standort ermittelt'; getPos(); },
+      () => { gpsTimer = setTimeout(getPos, 2000); }
+    );
+  } else {
+    gpsTimer = setTimeout(getPos, 2000);
+  }
+}
+
+function screenAnalyse() {
+  if(state.analyseDone && state.schaetzung) {
+    return `
+    <div style="animation:fadeUp .4s ease">
+      <div class="label">Schritt 5 — KI-Analyse</div>
+      <div class="title" style="font-size:30px;margin-bottom:20px">SCHADENSANALYSE</div>
+      <div class="card">
+        <div class="label">Erkannte Schadenbereiche</div>
+        ${state.schaetzung.bereiche.map((b,i)=>`
+        <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:${i<state.schaetzung.bereiche.length-1?'1px solid var(--border)':'none'};animation:slideIn .3s ease ${i*.1}s both">
+          <div style="width:6px;height:6px;border-radius:50%;background:var(--red);flex-shrink:0"></div>
+          <span style="color:#e5e7eb;font-size:14px">${b}</span>
+        </div>`).join('')}
+      </div>
+      <div class="card">
+        <div class="label">Konservative Erstschätzung</div>
+        <div style="font-family:'Bebas Neue';font-size:36px;color:var(--text);letter-spacing:.02em">${state.schaetzung.min.toLocaleString('de')} – ${state.schaetzung.max.toLocaleString('de')} €</div>
+        <div style="font-size:11px;color:var(--orange);margin-top:6px;line-height:1.5">⚠️ ${state.schaetzung.hinweis}</div>
+      </div>
+      <button class="btn btn-primary" onclick="goTo('ergebnis')">Weiter zur Zusammenfassung ➜</button>
+    </div>`;
+  }
+  return `
+  <div style="animation:fadeUp .4s ease">
+    <div class="label">Schritt 5 — KI-Analyse</div>
+    <div class="title" style="font-size:30px;margin-bottom:20px">SCHADENSANALYSE</div>
+    <div class="card" style="text-align:center;padding:32px 20px">
+      <div class="scan-container"><span style="font-size:72px">🚗</span><div class="scan-line" id="scanLine" style="top:0%"></div></div>
+      <div style="color:var(--text);font-weight:600;margin-bottom:6px">KI analysiert Schadensfotos…</div>
+      <div style="font-size:12px;color:var(--muted);font-family:'DM Mono',monospace">Computer Vision • CrashApp AI</div>
+    </div>
+  </div>`;
+}
+
+function initAnalyse() {
+  if(state.analyseDone) return;
+  let pos = 0;
+  scanTimer = setInterval(()=>{
+    pos = Math.min(pos+1.5,100);
+    const line = document.getElementById('scanLine');
+    if(line) line.style.top = pos+'%';
+    if(pos >= 100) {
+      clearInterval(scanTimer);
+      state.schaetzung = {
+        min: state.fotoCount >= 3 ? 2200 : 1800,
+        max: state.fotoCount >= 3 ? 4100 : 3200,
+        bereiche: state.fotoCount >= 3 ? ['Stoßstange','Karosserie','Anbauteile','Scheinwerfer'] : ['Stoßstange','Karosserie'],
+        hinweis: 'Konservative Erstschätzung — Gutachter ermittelt vollen Anspruch'
+      };
+      state.analyseDone = true;
+      renderStep();
+    }
+  }, 30);
+}
+
+function screenErgebnis() {
+  return `
+  <div style="animation:fadeUp .4s ease">
+    <div class="label">Schritt 6 — Zusammenfassung</div>
+    <div class="title" style="font-size:30px;margin-bottom:16px">IHRE DATEN</div>
+    <div class="card">
+      <div class="label">Persönliche Daten</div>
+      ${[['Name',`${state.vorname} ${state.nachname}`],['E-Mail',state.email],['Anschrift',`${state.strasse}, ${state.plz} ${state.ort}`]].map(([k,v])=>`
+      <div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--border);font-size:13px">
+        <span style="color:var(--muted)">${k}</span>
+        <span style="color:var(--text);font-weight:500;max-width:60%;text-align:right">${v}</span>
+      </div>`).join('')}
+    </div>
+    <div class="card">
+      <div class="label">Fahrzeug & Versicherung</div>
+      ${[['Kennzeichen',state.fahrzeugnummer],['Versichert',state.versichert==='ja'?`✅ Ja${state.versicherung?' — '+state.versicherung:''}`:'❌ Nein']].map(([k,v])=>`
+      <div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--border);font-size:13px">
+        <span style="color:var(--muted)">${k}</span>
+        <span style="color:var(--text);font-weight:500">${v}</span>
+      </div>`).join('')}
+    </div>
+    <div class="card">
+      <div class="label">Unfalldetails</div>
+      ${[['Fotos',`${state.fotoCount} gesichert`],['Standort',state.gpsAdresse],['KI-Schätzung',`${state.schaetzung?.min?.toLocaleString('de')} – ${state.schaetzung?.max?.toLocaleString('de')} €`]].map(([k,v])=>`
+      <div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--border);font-size:13px">
+        <span style="color:var(--muted)">${k}</span>
+        <span style="color:var(--text);font-weight:500">${v}</span>
+      </div>`).join('')}
+    </div>
+    <button class="btn btn-primary" onclick="submitCase()">✅ Gutachter beauftragen</button>
+  </div>`;
+}
+
+function submitCase() {
+  state.kundenId = 'CA-' + Date.now().toString(36).toUpperCase();
+  const newCase = {
+    id: Date.now().toString(), kunden_id: state.kundenId,
+    created_at: new Date().toISOString(),
+    vorname: state.vorname, nachname: state.nachname, email: state.email,
+    strasse: state.strasse, plz: state.plz, ort: state.ort,
+    fahrzeugnummer: state.fahrzeugnummer,
+    versichert: state.versichert === 'ja', versicherung: state.versicherung,
+    unfall_datum: new Date().toISOString().split('T')[0],
+    unfall_uhrzeit: new Date().toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'}),
+    unfall_ort: state.gpsAdresse, unfall_lat: state.gpsLat, unfall_lng: state.gpsLng,
+    schaden_min: state.schaetzung?.min, schaden_max: state.schaetzung?.max,
+    schaden_bereiche: state.schaetzung?.bereiche,
+    status: 'neu', notiz: ''
+  };
+  cases.unshift(newCase);
+  goTo('bestaetigung');
+}
+
+function screenBestaetigung() {
+  return `
+  <div style="text-align:center;padding-top:20px;animation:fadeUp .4s ease">
+    <div style="font-size:72px;margin-bottom:16px">✅</div>
+    <div style="font-family:'Bebas Neue';font-size:38px;color:var(--green);letter-spacing:.04em;margin-bottom:6px">GUTACHTER BEAUFTRAGT</div>
+    <p style="color:var(--muted);font-size:14px;line-height:1.6;margin-bottom:24px">Alle Gutachter wurden benachrichtigt.<br>Rückruf innerhalb von 30 Minuten.</p>
+    <div class="card" style="text-align:left;margin-bottom:14px">
+      <div class="label">Deine Fallnummer</div>
+      <div style="font-family:'Bebas Neue';font-size:32px;color:var(--red);letter-spacing:.08em">${state.kundenId||'CA-DEMO'}</div>
+      <div style="font-size:11px;color:var(--muted);margin-top:4px">Screenshot für deine Unterlagen</div>
+    </div>
+    <div class="card" style="text-align:left;margin-bottom:14px">
+      <div class="label">Benachrichtigt wurden</div>
+      ${['gutachter@outlook.de','andre.ulbrich@outlook.de','rezan.bali@outlook.de'].map((e,i)=>`
+      <div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:${i<2?'1px solid var(--border)':'none'};font-size:13px;animation:slideIn .3s ease ${i*.1}s both">
+        <div style="width:6px;height:6px;border-radius:50%;background:var(--green);animation:blink 1.5s infinite"></div>
+        <span style="color:var(--muted)">${e}</span>
+      </div>`).join('')}
+    </div>
+    <div class="card" style="background:rgba(16,185,129,.06);border-color:rgba(16,185,129,.2);margin-bottom:24px">
+      <div style="display:flex;align-items:center;gap:10px">
+        <span style="font-size:24px">📞</span>
+        <div>
+          <div style="color:var(--text);font-weight:600;font-size:14px">Rückruf erwartet in</div>
+          <div style="font-family:'Bebas Neue';font-size:30px;color:var(--green);letter-spacing:.06em">max. 30 Minuten</div>
+        </div>
+      </div>
+    </div>
+    <button class="btn btn-green" onclick="resetApp()">🏁 Neuen Fall starten</button>
+    <div style="font-size:11px;color:#1f2937;margin-top:16px">Demo-Version · Keine echten Daten übermittelt</div>
+  </div>`;
+}
+
+function resetApp() {
+  Object.assign(state, {
+    vorname:'',nachname:'',email:'',strasse:'',plz:'',ort:'',
+    fahrzeugnummer:'',versichert:null,versicherung:'',
+    fotos:{front:false,seite:false,kennzeichen:false,gesamt:false},
+    fotoCount:0,gpsReady:false,gpsAdresse:'Berlin, Deutschland',
+    analyseDone:false,schaetzung:null,kundenId:null
+  });
+  goTo('home');
+}
+
+// ══════════════════════════════════════════════════════════
+// GUTACHTER AUTH
+// ══════════════════════════════════════════════════════════
+function fillLogin(email) {
+  document.getElementById('loginEmail').value = email;
+  document.getElementById('loginPw').value = 'CrashApp2026!';
+}
+
+function doLogin() {
+  const email = document.getElementById('loginEmail').value.trim().toLowerCase();
+  const pw = document.getElementById('loginPw').value;
+  const acc = GUTACHTER_ACCOUNTS[email];
+  const errEl = document.getElementById('loginError');
+  if(acc && acc.password === pw) {
+    errEl.classList.add('hidden');
+    state.gutachterSession = { email, name: acc.name };
+    document.getElementById('viewLogin').classList.add('hidden');
+    document.getElementById('viewDashboard').classList.remove('hidden');
+    renderDashboard();
+  } else {
+    errEl.classList.remove('hidden');
+    document.querySelector('.login-box').style.animation = 'shake .5s ease';
+    setTimeout(()=>document.querySelector('.login-box').style.animation='',600);
+  }
+}
+
+function doLogout() {
+  state.gutachterSession = null;
+  showView('gutachter');
+}
+
+// ══════════════════════════════════════════════════════════
+// DASHBOARD
+// ══════════════════════════════════════════════════════════
+function renderDashboard() {
+  if(!state.gutachterSession) return;
+  document.getElementById('dashWelcome').textContent = `Willkommen, ${state.gutachterSession.name}`;
+  renderStats();
+  renderFilterTabs();
+  renderCasesList();
+  document.getElementById('caseDetail').classList.add('hidden');
+  document.getElementById('casesList').classList.remove('hidden');
+}
+
+function renderStats() {
+  const counts = { alle:cases.length, neu:0, in_bearbeitung:0, abgeschlossen:0 };
+  cases.forEach(c=>{ if(counts[c.status]!==undefined) counts[c.status]++; });
+  document.getElementById('dashStats').innerHTML = [
+    ['Gesamt',counts.alle,'var(--text)'],
+    ['Neu',counts.neu,'var(--red)'],
+    ['Aktiv',counts.in_bearbeitung,'var(--blue)'],
+    ['Fertig',counts.abgeschlossen,'var(--green)'],
+  ].map(([l,v,c])=>`
+  <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 10px;text-align:center">
+    <div style="font-family:'Bebas Neue';font-size:28px;color:${c};letter-spacing:.04em">${v}</div>
+    <div style="font-size:10px;color:var(--muted);font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.08em">${l}</div>
+  </div>`).join('');
+}
+
+function renderFilterTabs() {
+  const counts = { alle:cases.length, neu:0, in_bearbeitung:0, abgeschlossen:0 };
+  cases.forEach(c=>{ if(counts[c.status]!==undefined) counts[c.status]++; });
+  document.getElementById('filterTabs').innerHTML = [
+    ['alle','Alle'],['neu','Neu'],['in_bearbeitung','Aktiv'],['abgeschlossen','Fertig']
+  ].map(([k,l])=>`
+  <button class="filter-tab ${state.currentFilter===k?'active':''}" onclick="setFilter('${k}')">${l} (${counts[k]||0})</button>`).join('');
+}
+
+function setFilter(f) {
+  state.currentFilter = f;
+  renderFilterTabs();
+  renderCasesList();
+}
+
+function renderCasesList() {
+  const filtered = cases.filter(c => state.currentFilter==='alle' || c.status===state.currentFilter);
+  if(filtered.length===0) {
+    document.getElementById('casesList').innerHTML = `<div style="text-align:center;padding:60px 0;color:var(--muted)"><div style="font-size:48px;margin-bottom:12px">📭</div><div style="font-size:14px">Keine Fälle</div></div>`;
+    return;
+  }
+  document.getElementById('casesList').innerHTML = filtered.map((c,i)=>{
+    const cfg = STATUS_CFG[c.status]||STATUS_CFG.neu;
+    return `
+    <button class="case-card" onclick="openCase('${c.id}')" style="animation:slideIn .3s ease ${i*.05}s both">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
+        <div>
+          <div style="color:var(--text);font-weight:700;font-size:16px">${c.vorname} ${c.nachname}</div>
+          <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);margin-top:2px">${c.kunden_id}</div>
+        </div>
+        <span class="status-badge" style="background:${cfg.bg};color:${cfg.color};border:1px solid ${cfg.color}30">${cfg.label}</span>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px 16px;font-size:12px">
+        <div style="color:var(--muted)">📍 ${c.unfall_ort?.split(',')[0]||'Berlin'}</div>
+        <div style="color:var(--muted)">🚗 ${c.fahrzeugnummer}</div>
+        <div style="color:var(--muted)">📅 ${c.unfall_datum}</div>
+        <div style="color:var(--orange);font-weight:600">💶 ${c.schaden_min?.toLocaleString('de')}–${c.schaden_max?.toLocaleString('de')}€</div>
+      </div>
+      ${c.status==='neu'?`<div style="display:flex;align-items:center;gap:6px;margin-top:10px"><div style="width:6px;height:6px;border-radius:50%;background:var(--red);animation:blink 1.2s infinite"></div><span style="font-size:11px;color:var(--red);font-family:'DM Mono',monospace">WARTET AUF RÜCKRUF</span></div>`:''}
+    </button>`;
+  }).join('');
+}
+
+function openCase(id) {
+  state.selectedCaseId = id;
+  const c = cases.find(x=>x.id===id);
+  if(!c) return;
+  document.getElementById('casesList').classList.add('hidden');
+  const detail = document.getElementById('caseDetail');
+  detail.classList.remove('hidden');
+  const cfg = STATUS_CFG[c.status]||STATUS_CFG.neu;
+  detail.innerHTML = `
+  <div style="animation:fadeUp .4s ease">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:24px">
+      <button onclick="closeCase()" style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:6px 14px;cursor:pointer;color:var(--muted);font-size:13px">← Zurück</button>
+      <div style="flex:1">
+        <div style="font-family:'Bebas Neue';font-size:22px;color:var(--text);letter-spacing:.04em">Fall ${c.kunden_id}</div>
+      </div>
+      <span class="status-badge" style="background:${cfg.bg};color:${cfg.color};border:1px solid ${cfg.color}30">${cfg.label}</span>
+    </div>
+
+    <!-- Email Template -->
+    <div style="background:#0d1117;border:1px solid rgba(249,115,22,.3);border-radius:14px;padding:18px;margin-bottom:16px;border-left:3px solid var(--orange)">
+      <div style="font-size:10px;color:var(--orange);font-family:'DM Mono',monospace;letter-spacing:.1em;text-transform:uppercase;margin-bottom:12px">📧 Email-Benachrichtigung</div>
+      <div class="email-box">
+        <span style="color:var(--text)">Betreff:</span> ⚠️ Achtung Unfall! Neuer Fall ${c.kunden_id}<br><br>
+        <span style="color:var(--orange)">Folgender Kunde braucht euch:</span><br><br>
+        • <span style="color:var(--text)">Vor- und Nachname:</span> ${c.vorname} ${c.nachname}<br>
+        • <span style="color:var(--text)">Anschrift:</span> ${c.strasse}, ${c.plz} ${c.ort}<br>
+        • <span style="color:var(--text)">E-Mail:</span> ${c.email}<br>
+        • <span style="color:var(--text)">Kunden-ID:</span> ${c.kunden_id}<br>
+        • <span style="color:var(--text)">Unfall-Fotos:</span> gesichert<br>
+        • <span style="color:var(--text)">Unfallort:</span> ${c.unfall_ort}<br>
+        • <span style="color:var(--text)">Datum & Uhrzeit:</span> ${c.unfall_datum} um ${c.unfall_uhrzeit} Uhr<br>
+        • <span style="color:var(--text)">Fahrzeugnummer:</span> ${c.fahrzeugnummer}<br>
+        • <span style="color:var(--text)">Versichert:</span> ${c.versichert?`✅ Ja${c.versicherung?' — '+c.versicherung:''}`:'❌ Nein'}
+      </div>
+    </div>
+
+    <!-- Schätzung -->
+    <div class="card">
+      <div class="label">KI-Erstschätzung (konservativ)</div>
+      <div style="font-family:'Bebas Neue';font-size:32px;color:var(--text);letter-spacing:.02em">${c.schaden_min?.toLocaleString('de')} – ${c.schaden_max?.toLocaleString('de')} €</div>
+      <div style="font-size:11px;color:var(--muted);margin-top:4px">Bereiche: ${c.schaden_bereiche?.join(', ')||'—'}</div>
+      <div style="font-size:11px;color:var(--orange);margin-top:6px">⬆️ Gutachter ermittelt den vollen Anspruch</div>
+    </div>
+
+    <!-- GPS -->
+    <div class="card">
+      <div class="label">Unfallort</div>
+      <div style="color:var(--text);font-size:14px;margin-bottom:4px">${c.unfall_ort}</div>
+      <div style="font-family:'DM Mono',monospace;font-size:12px;color:var(--muted)">${c.unfall_lat}° N, ${c.unfall_lng}° E</div>
+      <a href="https://www.google.com/maps?q=${c.unfall_lat},${c.unfall_lng}" target="_blank" style="display:inline-block;margin-top:10px;font-size:12px;color:var(--blue);text-decoration:none">📍 In Google Maps öffnen ↗</a>
+    </div>
+
+    <!-- Status -->
+    <div class="card">
+      <div class="label">Status aktualisieren</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px">
+        ${Object.entries(STATUS_CFG).map(([key,cfg])=>`
+        <button onclick="updateStatus('${c.id}','${key}')" style="padding:10px;border-radius:10px;border:1px solid ${c.status===key?cfg.color:'var(--border)'};background:${c.status===key?cfg.bg:'transparent'};color:${c.status===key?cfg.color:'var(--muted)'};font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s">${cfg.label}</button>`).join('')}
+      </div>
+      <textarea id="caseNotizInput" placeholder="Notiz hinzufügen (optional)…" rows="2" style="width:100%;background:#0d1117;border:1px solid var(--border);border-radius:10px;padding:10px 12px;color:var(--text);font-size:13px;font-family:'DM Sans',sans-serif;resize:none;outline:none">${c.notiz||''}</textarea>
+      ${c.notiz?`<div style="margin-top:8px;font-size:12px;color:var(--muted);font-style:italic">Letzte Notiz: "${c.notiz}"</div>`:''}
+    </div>
+  </div>`;
+}
+
+function closeCase() {
+  state.selectedCaseId = null;
+  document.getElementById('caseDetail').classList.add('hidden');
+  document.getElementById('casesList').classList.remove('hidden');
+}
+
+function updateStatus(id, newStatus) {
+  const notizEl = document.getElementById('caseNotizInput');
+  const notiz = notizEl ? notizEl.value : '';
+  cases = cases.map(c => c.id===id ? {...c, status:newStatus, notiz:notiz||c.notiz} : c);
+  renderStats();
+  renderFilterTabs();
+  openCase(id);
+}
+
+// ══════════════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════════════
+renderStep();
+</script>
+
+
+</body></html>
