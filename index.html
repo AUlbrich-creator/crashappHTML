@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>CrashApp</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{background:#030712;font-family:"DM Sans",sans-serif;min-height:100vh}
+:root{--bg:#0a0f1a;--card:#111827;--border:#1f2937;--text:#f9fafb;--muted:#6b7280;--red:#ef4444;--green:#10b981;--blue:#3b82f6;--orange:#f97316}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulseRing{0%{transform:scale(1);opacity:.5}100%{transform:scale(2.4);opacity:0}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+.shell{min-height:100vh;background:#030712;display:flex;align-items:flex-start;justify-content:center;padding:16px 0 40px}
+.phone{width:100%;max-width:420px;background:var(--bg);min-height:calc(100vh - 32px);border-radius:24px;box-shadow:0 0 0 1px #1f2937,0 32px 64px rgba(0,0,0,.6);display:flex;flex-direction:column;overflow:hidden}
+.sbar{display:flex;justify-content:space-between;padding:14px 22px 0;font-size:12px;color:#374151;font-family:"DM Mono",monospace}
+.logo{color:var(--red);font-weight:700;letter-spacing:.06em}
+.logo span{color:var(--text)}
+.content{flex:1;padding:16px 22px 22px;overflow-y:auto}
+.hi{padding:10px;display:flex;justify-content:center}
+.hi div{width:100px;height:3px;background:var(--border);border-radius:99px}
+.ntog{position:fixed;top:12px;right:12px;z-index:9999;display:flex;gap:6px}
+.nb{background:#1f2937;color:#fff;border:none;border-radius:8px;padding:6px 12px;font-size:11px;cursor:pointer;font-family:"DM Mono",monospace;letter-spacing:.06em}
+.nb.u{background:var(--red)}.nb.g{background:var(--blue)}
+.bbar{padding:10px 22px 0}
+.bbtn{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:5px 12px;cursor:pointer;color:var(--muted);font-size:13px;font-family:"DM Sans",sans-serif;margin-bottom:10px}
+.pm{display:flex;justify-content:space-between;margin-bottom:5px}
+.pm span{font-size:10px;font-family:"DM Mono",monospace;letter-spacing:.08em;text-transform:uppercase}
+.pt{height:3px;background:#0d1117;border-radius:99px}
+.pf{height:100%;background:linear-gradient(90deg,#ef4444,#f97316);border-radius:99px;transition:width .5s}
+.lbl{font-size:10px;color:#4b5563;letter-spacing:.12em;text-transform:uppercase;font-family:"DM Mono",monospace;margin-bottom:10px}
+.card{background:var(--card);border-radius:14px;padding:18px;border:1px solid var(--border);margin-bottom:12px;animation:fadeUp .35s ease both}
+.btn{width:100%;padding:14px 20px;border-radius:12px;border:none;font-size:15px;font-weight:600;cursor:pointer;font-family:"DM Sans",sans-serif;transition:opacity .2s;margin-bottom:8px;display:flex;align-items:center;justify-content:center}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.pr{background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff}
+.se{background:var(--card);color:#e5e7eb;border:1px solid var(--border)}
+.gh{background:transparent;color:var(--muted);border:1px solid var(--border)}
+.gr{background:linear-gradient(135deg,#10b981,#059669);color:#fff}
+.bl{background:linear-gradient(135deg,#3b82f6,#2563eb);color:#fff}
+.ol{background:transparent;color:var(--blue);border:1px solid var(--blue)}
+.inp{width:100%;padding:13px 14px;margin-bottom:10px;background:#0d1117;border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:15px;font-family:"DM Sans",sans-serif;outline:none;transition:border-color .2s}
+.inp:focus{border-color:var(--red)}
+.rbtn{position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle,#ef4444 0%,#b91c1c 100%);border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 0 50px rgba(239,68,68,.35);transition:transform .15s}
+.rbtn:active{transform:scale(.95)}
+.pring{position:absolute;inset:0;border-radius:50%;border:2px solid #ef4444;opacity:0;pointer-events:none}
+.fb{width:100%;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 16px;cursor:pointer;display:flex;align-items:center;gap:12px;text-align:left;transition:all .25s;margin-bottom:8px}
+.fb.done{background:rgba(16,185,129,.08);border-color:var(--green)}
+.sbadge{font-size:10px;font-weight:700;padding:3px 8px;border-radius:99px;font-family:"DM Mono",monospace;letter-spacing:.06em;text-transform:uppercase}
+.cc{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;cursor:pointer;text-align:left;width:100%;transition:border-color .2s;margin-bottom:10px;display:block}
+.cc:hover{border-color:var(--blue)}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:0 10px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.scanbox{position:relative;background:#0d1117;border-radius:10px;height:150px;overflow:hidden;display:flex;align-items:center;justify-content:center;margin-bottom:20px}
+.scanline{position:absolute;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,#ef4444,transparent);box-shadow:0 0 14px #ef4444;transition:top .03s linear}
+.ebox{background:#0d1117;border-radius:10px;padding:14px;font-size:13px;color:var(--muted);line-height:1.8;font-family:"DM Mono",monospace}
+.lw{min-height:100vh;background:#030712;display:flex;align-items:center;justify-content:center;padding:20px}
+.lb{width:100%;max-width:400px;background:var(--bg);border-radius:24px;padding:40px 32px;border:1px solid var(--border);box-shadow:0 32px 64px rgba(0,0,0,.5);animation:fadeUp .4s ease}
+.dw{min-height:100vh;background:#030712;padding:20px 16px 40px}
+.di{max-width:680px;margin:0 auto}
+.ftab{padding:7px 14px;border-radius:99px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;font-family:"DM Sans",sans-serif;transition:all .2s}
+.ftab.active{border-color:var(--blue);background:rgba(59,130,246,.1);color:var(--blue)}
+.hidden{display:none!important}
+.ubadge{background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.3);border-radius:10px;padding:10px 14px;display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.finopt{width:100%;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;cursor:pointer;text-align:left;transition:all .2s;margin-bottom:10px;display:flex;align-items:center;gap:12px}
+.finopt.sel{border-color:var(--blue);background:rgba(59,130,246,.08)}
+.cambox{border:2px dashed var(--border);border-radius:12px;padding:32px 20px;text-align:center;cursor:pointer;transition:all .2s;margin-bottom:12px}
+.cambox:hover{border-color:var(--blue)}
+.cambox.done{border-color:var(--green);background:rgba(16,185,129,.05)}
+</style>
+</head>
+<body>
+
+<!-- Hidden camera inputs -->
+<input type="file" accept="image/*" capture="environment" id="cam_reg" style="display:none">
+<input type="file" accept="image/*" capture="environment" id="cam_guest" style="display:none">
+
+<div class="ntog">
+  <button class="nb u" id="bU" onclick="showView('user')">NUTZER</button>
+  <button class="nb" id="bG" onclick="showView('gutachter')">GUTACHTER</button>
+</div>
+
+<div id="vUser">
+  <div class="shell"><div class="phone">
+    <div class="sbar">
+      <span id="clk">09:41</span>
+      <span class="logo">CRASH<span>APP</span></span>
+      <span>●●●</span>
+    </div>
+    <div id="bBar" class="bbar hidden">
+      <button class="bbtn" onclick="goBack()">← zurück</button>
+      <div class="pm">
+        <span style="color:var(--muted)" id="sLbl">Schritt 1/5</span>
+        <span style="color:var(--red)" id="sPct">0%</span>
+      </div>
+      <div class="pt"><div class="pf" id="pFill" style="width:0%"></div></div>
+    </div>
+    <div class="content" id="sContent"></div>
+    <div class="hi"><div></div></div>
+  </div></div>
+</div>
+
+<div id="vLogin" class="hidden">
+  <div class="lw"><div class="lb">
+    <div style="text-align:center;margin-bottom:28px">
+      <div style="font-family:'Bebas Neue';font-size:44px;color:var(--text);letter-spacing:.04em">CRASH<span style="color:var(--red)">APP</span></div>
+      <div style="font-size:11px;color:var(--blue);font-family:'DM Mono',monospace;letter-spacing:.12em;text-transform:uppercase;margin-top:6px">Gutachter Portal</div>
+    </div>
+    <div class="lbl">Anmeldung</div>
+    <input class="inp" id="lE" type="email" placeholder="E-Mail Adresse">
+    <input class="inp" id="lP" type="password" placeholder="Passwort" onkeydown="if(event.key==='Enter')doLogin()">
+    <div id="lErr" class="hidden" style="background:rgba(239,68,68,.1);border:1px solid var(--red);border-radius:8px;padding:10px 14px;margin-bottom:12px;color:var(--red);font-size:13px">E-Mail oder Passwort falsch.</div>
+    <button class="btn bl" onclick="doLogin()">Anmelden</button>
+    <div style="margin-top:20px;background:#0d1117;border-radius:10px;padding:14px;border:1px solid var(--border)">
+      <div class="lbl" style="margin-bottom:8px">Test-Zugänge</div>
+      <button onclick="fillL('gutachter@outlook.de')" style="display:block;width:100%;text-align:left;background:none;border:none;cursor:pointer;padding:4px 0;color:var(--blue);font-size:12px;font-family:'DM Mono',monospace">Test Gutachter ↗</button>
+      <button onclick="fillL('andre.ulbrich@outlook.de')" style="display:block;width:100%;text-align:left;background:none;border:none;cursor:pointer;padding:4px 0;color:var(--blue);font-size:12px;font-family:'DM Mono',monospace">Andre Ulbrich ↗</button>
+      <button onclick="fillL('rezan.bali@outlook.de')" style="display:block;width:100%;text-align:left;background:none;border:none;cursor:pointer;padding:4px 0;color:var(--blue);font-size:12px;font-family:'DM Mono',monospace">Rezan Bali ↗</button>
+      <div style="font-size:10px;color:#374151;margin-top:6px">Passwort: CrashApp2026!</div>
+    </div>
+  </div></div>
+</div>
+
+<div id="vDash" class="hidden">
+  <div class="dw"><div class="di">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px">
+      <div>
+        <div style="font-family:'Bebas Neue';font-size:36px;color:var(--text);letter-spacing:.04em;line-height:.9">CRASH<span style="color:var(--blue)">APP</span></div>
+        <div style="font-size:11px;color:var(--blue);font-family:'DM Mono',monospace;letter-spacing:.1em;text-transform:uppercase;margin-top:4px">Gutachter Portal</div>
+        <div style="font-size:13px;color:var(--muted);margin-top:4px" id="dWel">Willkommen</div>
+      </div>
+      <button onclick="doLogout()" style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:7px 14px;cursor:pointer;color:var(--muted);font-size:12px;font-family:'DM Sans',sans-serif">Abmelden</button>
+    </div>
+    <div class="g4" style="margin-bottom:20px" id="dStats"></div>
+    <div style="display:flex;gap:6px;margin-bottom:16px;overflow-x:auto" id="fTabs"></div>
+    <div id="cList"></div>
+    <div id="cDet" class="hidden"></div>
+    <button onclick="rDash()" style="margin-top:16px;width:100%;background:transparent;border:1px solid var(--border);border-radius:10px;padding:10px;color:var(--muted);cursor:pointer;font-size:12px;font-family:'DM Sans',sans-serif">🔄 Aktualisieren</button>
+  </div></div>
+</div>
+
+<script>
+var GA = {
+  "gutachter@outlook.de":     {pw:"CrashApp2026!", name:"Test Gutachter"},
+  "andre.ulbrich@outlook.de": {pw:"CrashApp2026!", name:"Andre Ulbrich"},
+  "rezan.bali@outlook.de":    {pw:"CrashApp2026!", name:"Rezan Bali"}
+};
+var SC = {
+  neu:           {l:"Neu",            c:"#ef4444", b:"rgba(239,68,68,.1)"},
+  zugewiesen:    {l:"Zugewiesen",     c:"#f97316", b:"rgba(249,115,22,.1)"},
+  in_bearbeitung:{l:"In Bearbeitung", c:"#3b82f6", b:"rgba(59,130,246,.1)"},
+  abgeschlossen: {l:"Abgeschlossen",  c:"#10b981", b:"rgba(16,185,129,.1)"}
+};
+
+var STEPS_IN  = ["home","safety","fotos","gps","analyse","conf"];
+var STEPS_OUT = ["home","safety","fotos","gps","fin","kundendaten","analyse","conf"];
+var steps = STEPS_OUT, cStep = 0, scanT = null, gpsT = null;
+var regUser = null;
+var finModeReg = "manual", finModeGuest = "manual";
+
+var S = {
+  vn:"", nn:"", em:"", st:"", plz:"", ort:"", kfz:"", fin:"", tel:"",
+  fotos:{a:false,b:false,c:false,d:false}, fc:0,
+  gpsOk:false, gpsLat:"52.520008", gpsLng:"13.404954", gpsAdr:"",
+  anDone:false, schaetz:null, kid:null, cf:"alle", gutSess:null
+};
+
+var cases = [
+  {id:"d1",kid:"CA-DEMO001",tel:"+49 170 1234567",ca:new Date().toISOString(),vn:"Max",nn:"Mustermann",em:"max@example.de",st:"Hauptstraße 12",plz:"10115",ort:"Berlin",kfz:"B-MM 1234",fin:"WBA3A5C5XDF595895",ud:new Date().toISOString().split("T")[0],ut:"14:32",ua:"Friedrichstraße 43, 10117 Berlin",ulat:"52.5200",ulng:"13.4050",smin:1800,smax:3200,sb:["Stoßstange","Karosserie","Anbauteile"],status:"neu",notiz:""},
+  {id:"d2",kid:"CA-DEMO002",tel:"+49 171 9876543",ca:new Date(Date.now()-7200000).toISOString(),vn:"Anna",nn:"Schmidt",em:"anna@example.de",st:"Berliner Allee 88",plz:"40210",ort:"Düsseldorf",kfz:"D-AS 5678",fin:"WVWZZZ1JZ3W386752",ud:new Date().toISOString().split("T")[0],ut:"09:15",ua:"Berliner Allee 88, 40210 Düsseldorf",ulat:"51.2217",ulng:"6.7762",smin:2400,smax:4100,sb:["Frontstoßstange","Motorhaube","Scheinwerfer"],status:"in_bearbeitung",notiz:"Besichtigung morgen 10 Uhr"}
+];
+
+// ── INIT ─────────────────────────────────────────────────
+function init() {
+  try { var u = localStorage.getItem("ca_user"); if(u) regUser = JSON.parse(u); } catch(e){}
+  try { var g = localStorage.getItem("ca_guts"); if(g) S.gutSess = JSON.parse(g); } catch(e){}
+  setInterval(function(){ var e=document.getElementById("clk"); if(e) e.textContent=new Date().toLocaleTimeString("de-DE",{hour:"2-digit",minute:"2-digit"}); },1000);
+  // Attach camera listeners
+  document.getElementById("cam_reg").addEventListener("change", function(){ handleCamFile(this, "reg"); });
+  document.getElementById("cam_guest").addEventListener("change", function(){ handleCamFile(this, "guest"); });
+  render();
+}
+
+// ── VIEWS ────────────────────────────────────────────────
+function showView(v) {
+  ["vUser","vLogin","vDash"].forEach(function(i){ document.getElementById(i).classList.add("hidden"); });
+  document.getElementById("bU").className="nb";
+  document.getElementById("bG").className="nb";
+  if(v==="user") {
+    document.getElementById("vUser").classList.remove("hidden");
+    document.getElementById("bU").className="nb u";
+    render();
+  } else {
+    document.getElementById("bG").className="nb g";
+    if(S.gutSess) { document.getElementById("vDash").classList.remove("hidden"); rDash(); }
+    else document.getElementById("vLogin").classList.remove("hidden");
+  }
+}
+
+// ── FLOW NAV ─────────────────────────────────────────────
+function startUnfall() {
+  if(regUser) {
+    // Already logged in — start flow directly
+    S.fotos={a:false,b:false,c:false,d:false}; S.fc=0;
+    S.gpsOk=false; S.gpsAdr=""; S.anDone=false; S.schaetz=null;
+    S.vn=regUser.vn; S.nn=regUser.nn; S.em=regUser.em;
+    S.st=regUser.st; S.plz=regUser.plz; S.ort=regUser.ort;
+    S.kfz=regUser.kfz; S.fin=regUser.fin; S.tel=regUser.tel||'';
+    steps=STEPS_IN;
+    cStep=1; render();
+  } else {
+    // Show auth choice screen
+    showAuthChoice();
+  }
+}
+
+function showAuthChoice() {
+  document.getElementById("bBar").classList.add("hidden");
+  var h="<div style='display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:75vh;text-align:center;animation:fadeUp .4s ease'>";
+  h+="<div style='font-size:64px;margin-bottom:16px'>🚨</div>";
+  h+="<div style='font-family:Bebas Neue;font-size:36px;color:var(--text);letter-spacing:.04em;margin-bottom:8px'>UNFALL MELDEN</div>";
+  h+="<p style='color:var(--muted);font-size:14px;line-height:1.6;margin-bottom:32px'>Registriere dich einmalig für maximale Geschwindigkeit<br>— oder fahre als Gast fort.</p>";
+  h+="<div style='width:100%'>";
+  h+="<button class='btn pr' style='width:100%;margin-bottom:10px' onclick='showReg()'>👤 Konto erstellen — empfohlen</button>";
+  h+="<div style='font-size:11px;color:var(--muted);margin-bottom:16px'>Beim nächsten Unfall nur noch Foto machen — alles automatisch</div>";
+  h+="<button class='btn ol' style='width:100%;margin-bottom:10px' onclick='showLogin()'>🔑 Bereits registriert? Einloggen</button>";
+  h+="<button class='btn gh' style='width:100%;font-size:13px' onclick='startUnfallGast()'>Ohne Konto fortfahren →</button>";
+  h+="<div style='font-size:11px;color:var(--muted);margin-top:8px'>Als Gast müssen Daten manuell eingegeben werden</div>";
+  h+="</div></div>";
+  document.getElementById("sContent").innerHTML=h;
+}
+
+function startUnfallGast() {
+  S.fotos={a:false,b:false,c:false,d:false}; S.fc=0;
+  S.gpsOk=false; S.gpsAdr=""; S.anDone=false; S.schaetz=null;
+  S.vn=""; S.nn=""; S.em=""; S.st=""; S.plz=""; S.ort=""; S.kfz=""; S.fin="";
+  steps=STEPS_OUT;
+  cStep=1; render();
+}
+function goTo(s) {
+  if(scanT){clearInterval(scanT);scanT=null;}
+  if(gpsT){clearTimeout(gpsT);gpsT=null;}
+  var i=steps.indexOf(s); if(i>=0) cStep=i; render();
+}
+function goBack() { if(cStep>1){cStep--;render();}else{cStep=0;render();} }
+function goNext() { if(cStep<steps.length-1){cStep++;render();} }
+
+function render() {
+  var s=steps[cStep];
+  var bb=document.getElementById("bBar");
+  if(s==="home"||s==="conf") { bb.classList.add("hidden"); }
+  else {
+    bb.classList.remove("hidden");
+    var t=steps.length-1, p=Math.round((cStep/t)*100);
+    document.getElementById("pFill").style.width=p+"%";
+    document.getElementById("sLbl").textContent="Schritt "+cStep+" / "+t;
+    document.getElementById("sPct").textContent=p+"%";
+  }
+  var sc=document.getElementById("sContent");
+  if(s==="home")         sc.innerHTML=scHome();
+  else if(s==="safety")  sc.innerHTML=scSafety();
+  else if(s==="fotos")   sc.innerHTML=scFotos();
+  else if(s==="gps")     { sc.innerHTML=scGPS(); initGPS(); }
+  else if(s==="fin")     sc.innerHTML=scFIN();
+  else if(s==="kundendaten") sc.innerHTML=scKunden();
+  else if(s==="analyse") { sc.innerHTML=scAnalyse(); if(!S.anDone) initAnalyse(); }
+  else if(s==="conf")    sc.innerHTML=scConf();
+}
+
+// ── GEOCODING ────────────────────────────────────────────
+async function revGeo(lat,lng) {
+  var street="", hn="", pc="", city="";
+
+  // Step 1: Nominatim reverse geocode
+  try {
+    var r=await fetch("https://nominatim.openstreetmap.org/reverse?lat="+lat+"&lon="+lng+"&format=json&addressdetails=1",{headers:{"Accept-Language":"de"}});
+    var d=await r.json(); var a=d.address||{};
+    street=a.road||a.pedestrian||a.footway||a.street||"";
+    hn=a.house_number||"";
+    pc=a.postcode||"";
+    city=a.city||a.town||a.village||a.municipality||"";
+  } catch(e){}
+
+  // Step 2: No housenumber? Search for nearest addresses on same street
+  if(street && !hn) {
+    try {
+      var q=encodeURIComponent(street+(city?", "+city:""));
+      var url="https://nominatim.openstreetmap.org/search?q="+q+"&format=json&addressdetails=1&limit=20&countrycodes=de";
+      var r2=await fetch(url,{headers:{"Accept-Language":"de"}});
+      var results=await r2.json();
+      var bestDist=9999, bestN=0;
+      for(var i=0;i<results.length;i++){
+        var res=results[i];
+        if(res.address&&res.address.house_number){
+          var dlat=parseFloat(res.lat)-parseFloat(lat);
+          var dlng=parseFloat(res.lon)-parseFloat(lng);
+          var dist=Math.sqrt(dlat*dlat+dlng*dlng);
+          if(dist<bestDist){
+            bestDist=dist;
+            bestN=parseInt(res.address.house_number)||0;
+          }
+        }
+      }
+      if(bestN>0){
+        var lo=Math.max(1,bestN-4);
+        var hi=bestN+4;
+        hn=lo+"-"+hi;
+      }
+    } catch(e2){}
+  }
+
+  if(street) {
+    if(hn) return street+" "+hn+", "+pc+" "+city;
+    return street+", "+pc+" "+city;
+  }
+  return null;
+}
+
+// ── FIN CAMERA ───────────────────────────────────────────
+function openCam(mode) {
+  document.getElementById("cam_"+mode).click();
+}
+
+async function handleCamFile(input, mode) {
+  var file = input.files[0];
+  if(!file) return;
+
+  // Show scanning indicator
+  var scanId = "fin_scan_"+mode;
+  var camId  = "fin_cam_"+mode;
+  var resId  = "fin_res_"+mode;
+  var errId  = "fin_err_"+mode;
+  var manId  = mode==="reg" ? "r_fin" : "g_fin";
+  var btnId  = mode==="reg" ? null : "finBtn";
+
+  var camEl  = document.getElementById(camId);
+  var scanEl = document.getElementById(scanId);
+  var resEl  = document.getElementById(resId);
+  var errEl  = document.getElementById(errId);
+
+  if(camEl)  camEl.className  = "cambox done";
+  if(camEl)  camEl.innerHTML  = "<div style='font-size:28px'>✅</div><div style='color:var(--green);font-weight:600;margin-top:6px'>Foto aufgenommen</div>";
+  if(scanEl) scanEl.classList.remove("hidden");
+  if(resEl)  resEl.classList.add("hidden");
+  if(errEl)  errEl.classList.add("hidden");
+
+  // Read as base64
+  var reader = new FileReader();
+  reader.onload = async function(e) {
+    var b64 = e.target.result.split(",")[1];
+    var mime = file.type || "image/jpeg";
+    try {
+      var resp = await fetch("/.netlify/functions/scan-fin", {
+        method: "POST",
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify({ imageBase64: b64, mediaType: mime })
+      });
+      var data = await resp.json();
+      var fin = (data.fin || "NICHT_ERKANNT").trim().toUpperCase().replace(/\s/g,"");
+
+      if(scanEl) scanEl.classList.add("hidden");
+
+      if(fin.length===17 && fin!=="NICHT_ERKANNT") {
+        S.fin = fin;
+        var manEl = document.getElementById(manId);
+        if(manEl) manEl.value = fin;
+        if(resEl) {
+          resEl.querySelector(".fin_val").textContent = fin;
+          resEl.classList.remove("hidden");
+        }
+        if(btnId) { var b=document.getElementById(btnId); if(b) b.disabled=false; }
+      } else {
+        if(errEl) errEl.classList.remove("hidden");
+      }
+    } catch(err) {
+      if(scanEl) scanEl.classList.add("hidden");
+      if(errEl)  errEl.classList.remove("hidden");
+    }
+  };
+  reader.readAsDataURL(file);
+}
+
+// ── SCREENS ──────────────────────────────────────────────
+function scHome() {
+  var li=!!regUser, h="";
+  h+="<div style='display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:75vh;text-align:center;animation:fadeUp .4s ease'>";
+  h+="<div style='font-size:10px;color:var(--red);font-family:DM Mono,monospace;letter-spacing:.16em;text-transform:uppercase;margin-bottom:10px'>KI-gestützte Unfallhilfe</div>";
+  h+="<div style='font-family:Bebas Neue;font-size:58px;letter-spacing:.04em;color:var(--text);line-height:.9;margin-bottom:8px'>CRASH<span style='color:var(--red)'>APP</span></div>";
+  h+="<div style='color:var(--muted);font-size:14px;line-height:1.7;margin-bottom:28px'>Unfall passiert. App öffnen.<br>Problem gelöst.</div>";
+  if(li) {
+    h+="<div class='ubadge' style='width:100%'><span style='font-size:20px'>👤</span>";
+    h+="<div style='text-align:left'><div style='color:var(--green);font-weight:600;font-size:13px'>Eingeloggt</div>";
+    h+="<div style='color:var(--muted);font-size:12px'>"+regUser.vn+" "+regUser.nn+"</div></div>";
+    h+="<button onclick='logoutUser()' style='margin-left:auto;background:none;border:none;color:var(--muted);font-size:11px;cursor:pointer;font-family:DM Sans,sans-serif'>Abmelden</button></div>";
+  }
+  h+="<div style='position:relative;width:190px;height:190px;margin-bottom:28px'>";
+  h+="<div class='pring' style='animation:pulseRing 2.2s ease-out 0s infinite'></div>";
+  h+="<div class='pring' style='animation:pulseRing 2.2s ease-out .65s infinite'></div>";
+  h+="<div class='pring' style='animation:pulseRing 2.2s ease-out 1.3s infinite'></div>";
+  h+="<button class='rbtn' onclick='startUnfall()'>";
+  h+="<span style='font-size:38px;line-height:1'>🚨</span>";
+  h+="<span style='font-family:Bebas Neue;font-size:24px;color:#fff;letter-spacing:.06em;margin-top:6px'>UNFALL</span>";
+  h+="<span style='font-family:Bebas Neue;font-size:14px;color:rgba(255,255,255,.65);letter-spacing:.1em'>MELDEN</span>";
+  h+="</button></div>";
+
+  h+="<div class='g3' style='width:100%'>";
+  [["⚡","60 Sek.","KI-Analyse"],["👥","3 Partner","Verfügbar"],["🆓","Kostenlos","Für Nutzer"]].forEach(function(x){
+    h+="<div class='card' style='padding:14px 10px;text-align:center;margin-bottom:0'>";
+    h+="<div style='font-size:22px;margin-bottom:4px'>"+x[0]+"</div>";
+    h+="<div style='font-size:14px;font-weight:700;color:var(--text)'>"+x[1]+"</div>";
+    h+="<div style='font-size:10px;color:var(--muted);margin-top:2px'>"+x[2]+"</div></div>";
+  });
+  h+="</div></div>";
+  return h;
+}
+
+function logoutUser() { regUser=null; localStorage.removeItem("ca_user"); render(); }
+
+function showLogin() {
+  document.getElementById("bBar").classList.add("hidden");
+  var h="<div style='animation:fadeUp .4s ease;padding-top:20px'>";
+  h+="<div class='lbl'>Anmeldung</div>";
+  h+="<div style='font-family:Bebas Neue;font-size:30px;color:var(--text);margin-bottom:20px'>EINLOGGEN</div>";
+  h+="<input class='inp' id='ul_e' type='email' placeholder='E-Mail Adresse'>";
+  h+="<input class='inp' id='ul_p' type='password' placeholder='Passwort'>";
+  h+="<div id='ul_err' class='hidden' style='background:rgba(239,68,68,.1);border:1px solid var(--red);border-radius:8px;padding:10px 14px;margin-bottom:12px;color:var(--red);font-size:13px'>Falsche Zugangsdaten.</div>";
+  h+="<button class='btn pr' onclick='doUserLogin()'>Einloggen</button>";
+  h+="<button class='btn gh' onclick='render()'>← Zurück</button>";
+  h+="<div style='background:#0d1117;border-radius:10px;padding:12px;margin-top:8px;border:1px solid var(--border)'>";
+  h+="<div style='font-size:10px;color:var(--muted);font-family:DM Mono,monospace;margin-bottom:6px'>DEMO</div>";
+  h+="<button onclick='demoLogin()' style='background:none;border:none;color:var(--blue);font-size:12px;cursor:pointer;font-family:DM Mono,monospace'>max.mustermann@email.de ↗</button></div></div>";
+  document.getElementById("sContent").innerHTML=h;
+}
+function doUserLogin() {
+  var e=document.getElementById("ul_e").value.trim().toLowerCase();
+  var p=document.getElementById("ul_p").value;
+  try { var u=JSON.parse(localStorage.getItem("ca_user")||"null"); if(u&&u.em.toLowerCase()===e&&u.pw===p){regUser=u;startUnfall();return;} } catch(x){}
+  document.getElementById("ul_err").classList.remove("hidden");
+}
+function demoLogin() {
+  regUser={vn:"Max",nn:"Mustermann",em:"max.mustermann@email.de",pw:"demo123",st:"Hauptstraße 12",plz:"10115",ort:"Berlin",kfz:"B-MM 1234",fin:"WBA3A5C5XDF595895"};
+  startUnfall();
+}
+
+// ── REGISTRIERUNG ────────────────────────────────────────
+function showReg() {
+  finModeReg="manual";
+  document.getElementById("bBar").classList.add("hidden");
+  var h="<div style='animation:fadeUp .4s ease'>";
+  h+="<div class='lbl'>Einmalige Registrierung</div>";
+  h+="<div style='font-family:Bebas Neue;font-size:28px;color:var(--text);margin-bottom:6px'>KONTO ERSTELLEN</div>";
+  h+="<p style='color:var(--muted);font-size:13px;line-height:1.6;margin-bottom:16px'>Einmalig ausfüllen — beim Unfall alles automatisch.</p>";
+  h+="<div class='card'><div class='lbl'>Persönliche Daten</div>";
+  h+="<div class='g2'><input class='inp' id='r_vn' placeholder='Vorname'><input class='inp' id='r_nn' placeholder='Nachname'></div>";
+  h+="<input class='inp' id='r_em' type='email' placeholder='E-Mail Adresse'>";
+  h+="<input class='inp' id='r_tel' type='tel' placeholder='Telefonnummer'>";
+  h+="<input class='inp' id='r_pw' type='password' placeholder='Passwort (min. 6 Zeichen)'>";
+  h+="<input class='inp' id='r_st' placeholder='Straße & Hausnummer'>";
+  h+="<div class='g2'><input class='inp' id='r_plz' placeholder='PLZ'><input class='inp' id='r_ort' placeholder='Ort'></div></div>";
+  h+="<div class='card'><div class='lbl'>Fahrzeug</div>";
+  h+="<input class='inp' id='r_kfz' placeholder='Kennzeichen (z.B. B-AB 1234)'></div>";
+  h+="<div class='card'>";
+  h+="<div class='lbl'>FIN — Fahrzeugidentifikation</div>";
+  h+="<p style='color:var(--muted);font-size:12px;line-height:1.6;margin-bottom:14px'>Feld E im Fahrzeugschein (ZB I) — 17-stellige Nummer.</p>";
+  h+="<div class='finopt sel' id='fo_m_r' onclick='setFinReg(\"manual\")'><span style='font-size:22px'>⌨️</span><div><div style='color:var(--text);font-weight:600;font-size:14px'>FIN manuell eingeben</div><div style='color:var(--muted);font-size:12px'>17 Zeichen tippen</div></div></div>";
+  h+="<div class='finopt' id='fo_f_r' onclick='setFinReg(\"foto\")'><span style='font-size:22px'>📷</span><div><div style='color:var(--text);font-weight:600;font-size:14px'>Fahrzeugschein fotografieren</div><div style='color:var(--muted);font-size:12px'>Kamera öffnet sich — KI liest FIN aus</div></div></div>";
+  h+="<div id='fin_wrap_manual_r'>";
+  h+="<input class='inp' id='r_fin' placeholder='z.B. WBA3A5C5XDF595895' maxlength='17' oninput='this.value=this.value.toUpperCase()'>";
+  h+="<div style='font-size:11px;color:var(--muted)'>17 Zeichen</div></div>";
+  h+="<div id='fin_wrap_foto_r' class='hidden'>";
+  h+="<div class='cambox' id='fin_cam_reg' onclick='openCam(\"reg\")'>";
+  h+="<div style='font-size:32px;margin-bottom:8px'>📷</div>";
+  h+="<div style='color:var(--text);font-weight:600'>Tippen — Kamera öffnet sich</div>";
+  h+="<div style='color:var(--muted);font-size:12px;margin-top:4px'>KI liest FIN automatisch aus dem Fahrzeugschein</div></div>";
+  h+="<div id='fin_scan_reg' class='hidden' style='text-align:center;padding:16px'>";
+  h+="<div style='font-size:32px;animation:spin 1s linear infinite;display:inline-block'>⚙️</div>";
+  h+="<div style='color:var(--green);font-weight:600;margin-top:8px'>KI analysiert Fahrzeugschein…</div></div>";
+  h+="<div id='fin_res_reg' class='hidden' style='background:rgba(16,185,129,.08);border:1px solid var(--green);border-radius:10px;padding:12px;margin-top:8px'>";
+  h+="<div style='color:var(--green);font-size:10px;font-family:DM Mono,monospace;margin-bottom:4px'>✅ FIN ERKANNT</div>";
+  h+="<div class='fin_val' style='color:var(--text);font-family:DM Mono,monospace;font-size:15px'>—</div></div>";
+  h+="<div id='fin_err_reg' class='hidden' style='background:rgba(239,68,68,.1);border:1px solid var(--red);border-radius:10px;padding:12px;margin-top:8px;color:var(--red);font-size:13px'>FIN nicht erkannt — bitte manuell eingeben.</div>";
+  h+="</div></div>";
+  h+="<div id='r_err' class='hidden' style='background:rgba(239,68,68,.1);border:1px solid var(--red);border-radius:8px;padding:10px 14px;margin-bottom:12px;color:var(--red);font-size:13px'></div>";
+  h+="<button class='btn pr' onclick='submitReg()'>Konto erstellen ✅</button>";
+  h+="<button class='btn gh' onclick='render()'>← Zurück</button></div>";
+  document.getElementById("sContent").innerHTML=h;
+}
+
+function setFinReg(m) {
+  finModeReg=m;
+  document.getElementById("fo_m_r").className="finopt"+(m==="manual"?" sel":"");
+  document.getElementById("fo_f_r").className="finopt"+(m==="foto"?" sel":"");
+  document.getElementById("fin_wrap_manual_r").classList.toggle("hidden",m!=="manual");
+  document.getElementById("fin_wrap_foto_r").classList.toggle("hidden",m!=="foto");
+}
+
+function submitReg() {
+  var g=function(id){var e=document.getElementById(id);return e?e.value.trim():"";};
+  var err=document.getElementById("r_err");
+  var fin=finModeReg==="manual"?g("r_fin"):S.fin;
+  if(!g("r_vn")||!g("r_nn")||!g("r_em")||!g("r_pw")||!g("r_st")||!g("r_plz")||!g("r_ort")||!g("r_kfz")){
+    err.textContent="Bitte alle Pflichtfelder ausfüllen."; err.classList.remove("hidden"); return;
+  }
+  if(g("r_pw").length<6){err.textContent="Passwort mind. 6 Zeichen."; err.classList.remove("hidden"); return;}
+  err.classList.add("hidden");
+  var u={vn:g("r_vn"),nn:g("r_nn"),em:g("r_em"),pw:g("r_pw"),st:g("r_st"),plz:g("r_plz"),ort:g("r_ort"),kfz:g("r_kfz"),fin:fin};
+  localStorage.setItem("ca_user",JSON.stringify(u));
+  regUser=u;
+  var h="<div style='text-align:center;padding-top:40px;animation:fadeUp .4s ease'>";
+  h+="<div style='font-size:72px;margin-bottom:16px'>🎉</div>";
+  h+="<div style='font-family:Bebas Neue;font-size:36px;color:var(--green);letter-spacing:.04em;margin-bottom:8px'>KONTO ERSTELLT</div>";
+  h+="<p style='color:var(--muted);font-size:14px;line-height:1.6;margin-bottom:24px'>Beim nächsten Unfall läuft alles automatisch.</p>";
+  h+="<div class='card' style='text-align:left'>";
+  [["👤",u.vn+" "+u.nn],["📍",u.st+", "+u.plz+" "+u.ort],["🚗",u.kfz],["🔢","FIN: "+(u.fin||"—")]].forEach(function(r){
+    h+="<div style='display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--border);font-size:13px'><span>"+r[0]+"</span><span style='color:var(--text)'>"+r[1]+"</span></div>";
+  });
+  h+="</div><button class='btn pr' onclick='cStep=0;render()'>Zur Startseite ➜</button></div>";
+  document.getElementById("sContent").innerHTML=h;
+}
+
+// ── SAFETY ───────────────────────────────────────────────
+function scSafety() {
+  return "<div style='animation:fadeUp .4s ease'><div class='lbl'>Sicherheitscheck</div>"
+    +"<div style='font-family:Bebas Neue;font-size:32px;color:var(--text);letter-spacing:.04em;margin-bottom:6px'>BIST DU VERLETZT?</div>"
+    +"<p style='color:var(--muted);font-size:14px;line-height:1.6;margin-bottom:24px'>Deine Sicherheit hat absolute Priorität.</p>"
+    +"<button onclick='showEmerg()' style='width:100%;background:linear-gradient(135deg,#ef4444,#b91c1c);border:none;border-radius:14px;padding:20px 16px;cursor:pointer;display:flex;align-items:center;gap:14px;margin-bottom:12px;text-align:left'>"
+    +"<span style='font-size:36px'>🚑</span><div><div style='color:#fff;font-weight:700;font-size:17px'>Ja, ich brauche Hilfe</div>"
+    +"<div style='color:rgba(255,255,255,.6);font-size:13px;margin-top:2px'>Notruf 112 wird angezeigt</div></div></button>"
+    +"<button onclick='goNext()' style='width:100%;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px 16px;cursor:pointer;display:flex;align-items:center;gap:14px;text-align:left'>"
+    +"<span style='font-size:36px'>✅</span><div><div style='color:var(--text);font-weight:700;font-size:17px'>Nein, mir geht's gut</div>"
+    +"<div style='color:var(--muted);font-size:13px;margin-top:2px'>Weiter zur Dokumentation</div></div></button></div>";
+}
+function showEmerg() {
+  document.getElementById("sContent").innerHTML
+    ="<div style='text-align:center;padding-top:30px;animation:fadeUp .4s ease'>"
+    +"<div style='font-size:72px;margin-bottom:20px'>🚨</div>"
+    +"<div style='font-family:Bebas Neue;font-size:44px;color:var(--red);letter-spacing:.04em;margin-bottom:20px'>NOTRUF</div>"
+    +"<div class='card' style='text-align:center'><div style='font-family:Bebas Neue;font-size:80px;color:var(--red);letter-spacing:.1em;animation:blink 1.5s infinite'>112</div>"
+    +"<div style='color:var(--muted);font-size:13px'>Europäischer Notruf — kostenlos</div></div>"
+    +"<p style='color:var(--muted);font-size:13px;line-height:1.7;margin:20px 0'>Standort, Anzahl Verletzter und Telefonnummer nennen.</p>"
+    +"<button class='btn se' onclick='goNext()'>Hilfe gerufen — weiter</button></div>";
+}
+
+// ── FOTOS ────────────────────────────────────────────────
+function scFotos() {
+  var li=!!regUser, h="<div style='animation:fadeUp .4s ease'>";
+  h+="<div class='lbl'>Beweissicherung</div>";
+  h+="<div style='font-family:Bebas Neue;font-size:30px;color:var(--text);letter-spacing:.04em;margin-bottom:6px'>FOTOS AUFNEHMEN</div>";
+  if(li) h+="<div style='background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.2);border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:12px;color:var(--green)'>✅ Deine Daten wurden automatisch übernommen</div>";
+  h+="<p style='color:var(--muted);font-size:13px;line-height:1.6;margin-bottom:16px'>Tippe auf jeden Punkt um das Foto zu simulieren.</p>";
+  [["a","📸","Eigener Schaden — Frontansicht"],["b","📸","Eigener Schaden — Seitenansicht"],["c","🔢","Kennzeichen des Unfallgegners"],["d","📍","Gesamtbild der Unfallstelle"]].forEach(function(x){
+    var done=S.fotos[x[0]];
+    h+="<button class='fb"+(done?" done":"")+"' onclick='takeFoto(\""+x[0]+"\")'>";
+    h+="<span style='font-size:22px'>"+(done?"✅":x[1])+"</span>";
+    h+="<span style='color:"+(done?"var(--green)":"var(--text)")+";font-size:14px;font-weight:500;flex:1'>"+x[2]+"</span>";
+    if(!done) h+="<span style='font-size:10px;color:var(--muted);font-family:DM Mono,monospace'>TIPPEN</span>";
+    h+="</button>";
+  });
+  h+="<div style='margin-bottom:18px'><div style='display:flex;justify-content:space-between;margin-bottom:6px'><span style='font-size:13px;color:var(--muted)'>Fotos gesichert</span><span style='font-size:13px;color:var(--text);font-weight:600'>"+S.fc+" / 4</span></div>";
+  h+="<div class='pt'><div style='height:100%;width:"+((S.fc/4)*100)+"%;background:linear-gradient(90deg,var(--green),#059669);border-radius:99px;transition:width .4s'></div></div></div>";
+  h+="<button class='btn pr' onclick='goNext()'"+(S.fc<2?" disabled":"")+">"+(S.fc<2?"Noch "+(2-S.fc)+" Pflichtfoto(s)":"Fotos gesichert — weiter ➜")+"</button>";
+  if(S.fc>=2) h+="<button class='btn gh' onclick='goNext()'>Weitere überspringen</button>";
+  h+="</div>";
+  return h;
+}
+function takeFoto(k){ if(!S.fotos[k]){S.fotos[k]=true;S.fc++;render();} }
+
+// ── GPS ──────────────────────────────────────────────────
+function scGPS() {
+  var h="<div style='animation:fadeUp .4s ease'>";
+  h+="<div class='lbl'>Standorterfassung</div>";
+  h+="<div style='font-family:Bebas Neue;font-size:30px;color:var(--text);letter-spacing:.04em;margin-bottom:20px'>UNFALLORT</div>";
+  h+="<div class='card' style='text-align:center;padding:36px 20px;margin-bottom:16px'>";
+  h+="<div style='font-size:48px;animation:spin 2s linear infinite;display:inline-block;margin-bottom:14px' id='gI'>📡</div>";
+  h+="<div style='color:var(--text);font-weight:600;margin-bottom:8px' id='gS'>GPS wird ermittelt…</div>";
+  h+="<div style='color:var(--muted);font-size:13px;line-height:1.6;font-weight:500' id='gA'>Adresse wird ermittelt…</div></div>";
+  h+="<div class='card' style='margin-bottom:18px'><div class='lbl'>Uhrzeit & Datum</div>";
+  h+="<div style='font-family:Bebas Neue;font-size:28px;color:var(--text);letter-spacing:.04em'>"+new Date().toLocaleString("de-DE",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"})+" Uhr</div>";
+  h+="<div style='font-size:11px;color:var(--muted);margin-top:4px'>Automatisch erfasst</div></div>";
+  h+="<button class='btn pr' id='gBtn' onclick='goNext()' disabled>Warte auf GPS…</button></div>";
+  return h;
+}
+function initGPS() {
+  var done=async function(lat,lng) {
+    S.gpsLat=lat; S.gpsLng=lng;
+    var gi=document.getElementById("gI"),gs=document.getElementById("gS"),ga=document.getElementById("gA"),gb=document.getElementById("gBtn");
+    if(!gi) return;
+    ga.textContent="Adresse wird ermittelt…";
+    var adr=await revGeo(lat,lng);
+    gi.style.animation="none"; gi.textContent="📍";
+    gs.textContent="Standort gesichert"; gs.style.color="var(--green)";
+    S.gpsAdr=adr||(parseFloat(lat).toFixed(4)+"° N, "+parseFloat(lng).toFixed(4)+"° E");
+    ga.textContent=S.gpsAdr; ga.style.color="var(--text)"; ga.style.fontWeight="600";
+    if(gb){gb.disabled=false;gb.textContent="Standort bestätigt — weiter ➜";}
+    S.gpsOk=true;
+  };
+  if(navigator.geolocation){
+    navigator.geolocation.getCurrentPosition(
+      function(p){done(p.coords.latitude.toFixed(6),p.coords.longitude.toFixed(6));},
+      function(){gpsT=setTimeout(function(){done("52.520008","13.404954");},1500);}
+    );
+  } else { gpsT=setTimeout(function(){done("52.520008","13.404954");},1500); }
+}
+
+// ── FIN (Guest) ──────────────────────────────────────────
+function scFIN() {
+  var h="<div style='animation:fadeUp .4s ease'>";
+  h+="<div class='lbl'>Fahrzeugidentifikation</div>";
+  h+="<div style='font-family:Bebas Neue;font-size:30px;color:var(--text);letter-spacing:.04em;margin-bottom:6px'>FIN / FAHRZEUGSCHEIN</div>";
+  h+="<p style='color:var(--muted);font-size:13px;line-height:1.6;margin-bottom:18px'>FIN = Feld E im Fahrzeugschein (ZB I) — 17-stellige Nummer.</p>";
+  h+="<div class='finopt sel' id='fo_m_g' onclick='setFinGuest(\"manual\")'><span style='font-size:22px'>⌨️</span><div><div style='color:var(--text);font-weight:600;font-size:14px'>FIN manuell eingeben</div><div style='color:var(--muted);font-size:12px'>17 Zeichen tippen</div></div></div>";
+  h+="<div class='finopt' id='fo_f_g' onclick='setFinGuest(\"foto\")'><span style='font-size:22px'>📷</span><div><div style='color:var(--text);font-weight:600;font-size:14px'>Fahrzeugschein fotografieren</div><div style='color:var(--muted);font-size:12px'>Kamera öffnet sich — KI liest FIN aus</div></div></div>";
+  h+="<div id='fin_wrap_manual_g'>";
+  h+="<input class='inp' id='g_fin' placeholder='z.B. WBA3A5C5XDF595895' maxlength='17' value='"+S.fin+"' oninput='this.value=this.value.toUpperCase();S.fin=this.value;chkFin()'>";
+  h+="<div style='font-size:11px;color:var(--muted);margin-bottom:12px'>17 Zeichen</div></div>";
+  h+="<div id='fin_wrap_foto_g' class='hidden'>";
+  h+="<div class='cambox' id='fin_cam_guest' onclick='openCam(\"guest\")'>";
+  h+="<div style='font-size:32px;margin-bottom:8px'>📷</div>";
+  h+="<div style='color:var(--text);font-weight:600'>Tippen — Kamera öffnet sich</div>";
+  h+="<div style='color:var(--muted);font-size:12px;margin-top:4px'>KI liest FIN automatisch aus dem Fahrzeugschein</div></div>";
+  h+="<div id='fin_scan_guest' class='hidden' style='text-align:center;padding:16px'>";
+  h+="<div style='font-size:32px;animation:spin 1s linear infinite;display:inline-block'>⚙️</div>";
+  h+="<div style='color:var(--green);font-weight:600;margin-top:8px'>KI analysiert Fahrzeugschein…</div></div>";
+  h+="<div id='fin_res_guest' class='hidden' style='background:rgba(16,185,129,.08);border:1px solid var(--green);border-radius:10px;padding:12px;margin-top:8px'>";
+  h+="<div style='color:var(--green);font-size:10px;font-family:DM Mono,monospace;margin-bottom:4px'>✅ FIN ERKANNT</div>";
+  h+="<div class='fin_val' style='color:var(--text);font-family:DM Mono,monospace;font-size:16px'>—</div></div>";
+  h+="<div id='fin_err_guest' class='hidden' style='background:rgba(239,68,68,.1);border:1px solid var(--red);border-radius:10px;padding:12px;margin-top:8px;color:var(--red);font-size:13px'>FIN nicht erkannt — bitte manuell eingeben.</div>";
+  h+="</div>";
+  h+="<button class='btn pr' id='finBtn' onclick='goNext()'"+(S.fin.length!==17?" disabled":"")+"'>Weiter ➜</button>";
+  h+="<button class='btn gh' style='font-size:13px' onclick='goNext()'>Überspringen</button></div>";
+  return h;
+}
+function setFinGuest(m) {
+  finModeGuest=m;
+  document.getElementById("fo_m_g").className="finopt"+(m==="manual"?" sel":"");
+  document.getElementById("fo_f_g").className="finopt"+(m==="foto"?" sel":"");
+  document.getElementById("fin_wrap_manual_g").classList.toggle("hidden",m!=="manual");
+  document.getElementById("fin_wrap_foto_g").classList.toggle("hidden",m!=="foto");
+}
+function chkFin(){ var b=document.getElementById("finBtn"); if(b) b.disabled=S.fin.length!==17; }
+
+// ── KUNDENDATEN ──────────────────────────────────────────
+function scKunden() {
+  var h="<div style='animation:fadeUp .4s ease'>";
+  h+="<div class='lbl'>Ihre Daten</div>";
+  h+="<div style='font-family:Bebas Neue;font-size:30px;color:var(--text);letter-spacing:.04em;margin-bottom:16px'>PERSÖNLICHE DATEN</div>";
+  h+="<div class='g2'><input class='inp' placeholder='Vorname' value='"+S.vn+"' oninput='S.vn=this.value;ckK()'><input class='inp' placeholder='Nachname' value='"+S.nn+"' oninput='S.nn=this.value;ckK()'></div>";
+  h+="<input class='inp' type='email' placeholder='E-Mail Adresse' value='"+S.em+"' oninput='S.em=this.value;ckK()'>";
+  h+="<input class='inp' type='tel' placeholder='Telefonnummer' value='"+S.tel+"' oninput='S.tel=this.value'>";
+  h+="<input class='inp' placeholder='Straße & Hausnummer' value='"+S.st+"' oninput='S.st=this.value;ckK()'>";
+  h+="<div class='g2'><input class='inp' placeholder='PLZ' value='"+S.plz+"' oninput='S.plz=this.value;ckK()'><input class='inp' placeholder='Ort' value='"+S.ort+"' oninput='S.ort=this.value;ckK()'></div>";
+  h+="<input class='inp' placeholder='Kennzeichen (z.B. B-AB 1234)' value='"+S.kfz+"' oninput='S.kfz=this.value;ckK()'>";
+  h+="<button class='btn pr' id='kBtn' onclick='goNext()'"+((!S.vn||!S.nn||!S.em||!S.st||!S.plz||!S.ort||!S.kfz)?" disabled":"")+"'>Weiter ➜</button></div>";
+  return h;
+}
+function ckK(){ var b=document.getElementById("kBtn"); if(b) b.disabled=!S.vn||!S.nn||!S.em||!S.st||!S.plz||!S.ort||!S.kfz; }
+
+// ── ANALYSE ──────────────────────────────────────────────
+function scAnalyse() {
+  if(S.anDone&&S.schaetz) {
+    var h="<div style='animation:fadeUp .4s ease'>";
+    h+="<div class='lbl'>KI-Analyse</div>";
+    h+="<div style='font-family:Bebas Neue;font-size:30px;color:var(--text);letter-spacing:.04em;margin-bottom:20px'>SCHADENSANALYSE</div>";
+    h+="<div class='card'><div class='lbl'>Erkannte Schadenbereiche</div>";
+    S.schaetz.b.forEach(function(x,i){
+      h+="<div style='display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:"+(i<S.schaetz.b.length-1?"1px solid var(--border)":"none")+"'>";
+      h+="<div style='width:6px;height:6px;border-radius:50%;background:var(--red);flex-shrink:0'></div><span style='color:#e5e7eb;font-size:14px'>"+x+"</span></div>";
+    });
+    h+="</div><div class='card'><div class='lbl'>Konservative Erstschätzung</div>";
+    h+="<div style='font-family:Bebas Neue;font-size:36px;color:var(--text);letter-spacing:.02em'>"+S.schaetz.min.toLocaleString("de")+" – "+S.schaetz.max.toLocaleString("de")+" €</div>";
+    h+="<div style='font-size:11px;color:var(--orange);margin-top:6px;line-height:1.5'>⚠️ "+S.schaetz.h+"</div></div>";
+    h+="<button class='btn pr' onclick='submitCase()'>✅ Gutachter beauftragen</button></div>";
+    return h;
+  }
+  return "<div style='animation:fadeUp .4s ease'><div class='lbl'>KI-Analyse</div>"
+    +"<div style='font-family:Bebas Neue;font-size:30px;color:var(--text);letter-spacing:.04em;margin-bottom:20px'>SCHADENSANALYSE</div>"
+    +"<div class='card' style='text-align:center;padding:32px 20px'>"
+    +"<div class='scanbox'><span style='font-size:72px'>🚗</span><div class='scanline' id='sl' style='top:0%'></div></div>"
+    +"<div style='color:var(--text);font-weight:600;margin-bottom:6px'>KI analysiert Schadensfotos…</div>"
+    +"<div style='font-size:12px;color:var(--muted);font-family:DM Mono,monospace'>Computer Vision • CrashApp AI</div></div></div>";
+}
+function initAnalyse() {
+  if(S.anDone) return;
+  var p=0;
+  scanT=setInterval(function(){
+    p=Math.min(p+1.5,100);
+    var l=document.getElementById("sl"); if(l) l.style.top=p+"%";
+    if(p>=100){
+      clearInterval(scanT);
+      S.schaetz={min:S.fc>=3?2200:1800,max:S.fc>=3?4100:3200,b:S.fc>=3?["Stoßstange","Karosserie","Anbauteile","Scheinwerfer"]:["Stoßstange","Karosserie"],h:"Konservative Erstschätzung — Gutachter ermittelt vollen Anspruch"};
+      S.anDone=true; render();
+    }
+  },30);
+}
+
+function submitCase() {
+  S.kid="CA-"+Date.now().toString(36).toUpperCase();
+  cases.unshift({id:Date.now().toString(),kid:S.kid,ca:new Date().toISOString(),
+    vn:S.vn,nn:S.nn,em:S.em,tel:S.tel,st:S.st,plz:S.plz,ort:S.ort,kfz:S.kfz,fin:S.fin,
+    ud:new Date().toISOString().split("T")[0],ut:new Date().toLocaleTimeString("de-DE",{hour:"2-digit",minute:"2-digit"}),
+    ua:S.gpsAdr,ulat:S.gpsLat,ulng:S.gpsLng,
+    smin:S.schaetz?S.schaetz.min:0,smax:S.schaetz?S.schaetz.max:0,sb:S.schaetz?S.schaetz.b:[],
+    status:"neu",notiz:""});
+  goTo("conf");
+}
+
+// ── BESTÄTIGUNG ───────────────────────────────────────────
+function scConf() {
+  var h="<div style='text-align:center;padding-top:20px;animation:fadeUp .4s ease'>";
+  h+="<div style='font-size:72px;margin-bottom:16px'>✅</div>";
+  h+="<div style='font-family:Bebas Neue;font-size:38px;color:var(--green);letter-spacing:.04em;margin-bottom:6px'>GUTACHTER BEAUFTRAGT</div>";
+  h+="<p style='color:var(--muted);font-size:14px;line-height:1.6;margin-bottom:24px'>Alle Gutachter wurden benachrichtigt.<br>Rückruf innerhalb von 30 Minuten.</p>";
+  h+="<div class='card' style='text-align:left;margin-bottom:14px'><div class='lbl'>Fallnummer</div>";
+  h+="<div style='font-family:Bebas Neue;font-size:32px;color:var(--red);letter-spacing:.08em'>"+(S.kid||"CA-DEMO")+"</div>";
+  h+="<div style='font-size:11px;color:var(--muted);margin-top:4px'>Screenshot für deine Unterlagen</div></div>";
+  h+="<div class='card' style='text-align:left;margin-bottom:14px'><div class='lbl'>Übermittelt an</div>";
+  ["gutachter@outlook.de","andre.ulbrich@outlook.de","rezan.bali@outlook.de"].forEach(function(m,i){
+    h+="<div style='display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:"+(i<2?"1px solid var(--border)":"none")+";font-size:13px'>";
+    h+="<div style='width:6px;height:6px;border-radius:50%;background:var(--green);animation:blink 1.5s infinite'></div>";
+    h+="<span style='color:var(--muted)'>"+m+"</span></div>";
+  });
+  h+="</div><div class='card' style='background:rgba(16,185,129,.06);border-color:rgba(16,185,129,.2);margin-bottom:24px'>";
+  h+="<div style='display:flex;align-items:center;gap:10px'><span style='font-size:24px'>📞</span><div>";
+  h+="<div style='color:var(--text);font-weight:600;font-size:14px'>Rückruf erwartet in</div>";
+  h+="<div style='font-family:Bebas Neue;font-size:30px;color:var(--green);letter-spacing:.06em'>max. 30 Minuten</div></div></div></div>";
+  h+="<button class='btn gr' onclick='resetApp()'>🏁 Neuen Fall starten</button>";
+  h+="<div style='font-size:11px;color:#1f2937;margin-top:16px'>Demo-Version</div></div>";
+  return h;
+}
+function resetApp() {
+  S.fotos={a:false,b:false,c:false,d:false}; S.fc=0; S.gpsOk=false; S.gpsAdr=""; S.anDone=false; S.schaetz=null; S.kid=null;
+  if(!regUser){S.vn="";S.nn="";S.em="";S.st="";S.plz="";S.ort="";S.kfz="";S.fin="";S.tel="";}
+  cStep=0; render();
+}
+
+// ── GUTACHTER LOGIN ───────────────────────────────────────
+function fillL(e){ document.getElementById("lE").value=e; document.getElementById("lP").value="CrashApp2026!"; }
+function doLogin(){
+  var e=document.getElementById("lE").value.trim().toLowerCase();
+  var p=document.getElementById("lP").value;
+  var a=GA[e]; var err=document.getElementById("lErr");
+  if(a&&a.pw===p){
+    err.classList.add("hidden"); S.gutSess={email:e,name:a.name};
+    localStorage.setItem("ca_guts",JSON.stringify(S.gutSess));
+    document.getElementById("vLogin").classList.add("hidden");
+    document.getElementById("vDash").classList.remove("hidden"); rDash();
+  } else { err.classList.remove("hidden"); }
+}
+function doLogout(){ S.gutSess=null; localStorage.removeItem("ca_guts"); showView("gutachter"); }
+
+// ── DASHBOARD ─────────────────────────────────────────────
+function rDash(){
+  if(!S.gutSess) return;
+  document.getElementById("dWel").textContent="Willkommen, "+S.gutSess.name;
+  rStats(); rTabs(); rList();
+  document.getElementById("cDet").classList.add("hidden");
+  document.getElementById("cList").classList.remove("hidden");
+}
+function rStats(){
+  var c={alle:cases.length,neu:0,in_bearbeitung:0,abgeschlossen:0};
+  cases.forEach(function(x){if(c[x.status]!==undefined)c[x.status]++;});
+  var h="";
+  [["Gesamt",c.alle,"var(--text)"],["Neu",c.neu,"var(--red)"],["Aktiv",c.in_bearbeitung,"var(--blue)"],["Fertig",c.abgeschlossen,"var(--green)"]].forEach(function(r){
+    h+="<div style='background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 10px;text-align:center'>"
+      +"<div style='font-family:Bebas Neue;font-size:28px;color:"+r[2]+";letter-spacing:.04em'>"+r[1]+"</div>"
+      +"<div style='font-size:10px;color:var(--muted);font-family:DM Mono,monospace;text-transform:uppercase;letter-spacing:.08em'>"+r[0]+"</div></div>";
+  });
+  document.getElementById("dStats").innerHTML=h;
+}
+function rTabs(){
+  var c={alle:cases.length,neu:0,in_bearbeitung:0,abgeschlossen:0};
+  cases.forEach(function(x){if(c[x.status]!==undefined)c[x.status]++;});
+  var h="";
+  [["alle","Alle"],["neu","Neu"],["in_bearbeitung","Aktiv"],["abgeschlossen","Fertig"]].forEach(function(t){
+    h+="<button class='ftab"+(S.cf===t[0]?" active":"")+"' onclick='setF(\""+t[0]+"\")'>"+t[1]+" ("+(c[t[0]]||0)+")</button>";
+  });
+  document.getElementById("fTabs").innerHTML=h;
+}
+function setF(f){ S.cf=f; rTabs(); rList(); }
+function rList(){
+  var fl=cases.filter(function(c){return S.cf==="alle"||c.status===S.cf;});
+  if(!fl.length){ document.getElementById("cList").innerHTML="<div style='text-align:center;padding:60px 0;color:var(--muted)'><div style='font-size:48px;margin-bottom:12px'>📭</div><div>Keine Fälle</div></div>"; return; }
+  var h="";
+  fl.forEach(function(c){
+    var cfg=SC[c.status]||SC.neu;
+    h+="<button class='cc' onclick='oCase(\""+c.id+"\")'>";
+    h+="<div style='display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px'>";
+    h+="<div><div style='color:var(--text);font-weight:700;font-size:16px'>"+c.vn+" "+c.nn+"</div>";
+    h+="<div style='font-family:DM Mono,monospace;font-size:11px;color:var(--muted);margin-top:2px'>"+c.kid+"</div></div>";
+    h+="<span class='sbadge' style='background:"+cfg.b+";color:"+cfg.c+";border:1px solid "+cfg.c+"30'>"+cfg.l+"</span></div>";
+    h+="<div style='display:grid;grid-template-columns:1fr 1fr;gap:4px 16px;font-size:12px'>";
+    h+="<div style='color:var(--muted)'>📍 "+(c.ua?c.ua.split(",")[0]:"—")+"</div>";
+    h+="<div style='color:var(--muted)'>🚗 "+c.kfz+"</div>";
+    h+="<div style='color:var(--muted)'>📅 "+c.ud+"</div>";
+    h+="<div style='color:var(--orange);font-weight:600'>💶 "+(c.smin||0).toLocaleString("de")+"–"+(c.smax||0).toLocaleString("de")+"€</div></div>";
+    if(c.status==="neu") h+="<div style='display:flex;align-items:center;gap:6px;margin-top:10px'><div style='width:6px;height:6px;border-radius:50%;background:var(--red);animation:blink 1.2s infinite'></div><span style='font-size:11px;color:var(--red);font-family:DM Mono,monospace'>WARTET AUF RÜCKRUF</span></div>";
+    h+="</button>";
+  });
+  document.getElementById("cList").innerHTML=h;
+}
+function oCase(id){
+  var c=cases.find(function(x){return x.id===id;});
+  if(!c) return;
+  document.getElementById("cList").classList.add("hidden");
+  var det=document.getElementById("cDet"); det.classList.remove("hidden");
+  var cfg=SC[c.status]||SC.neu;
+  var h="<div style='animation:fadeUp .4s ease'>";
+  h+="<div style='display:flex;align-items:center;gap:12px;margin-bottom:24px'>";
+  h+="<button onclick='clCase()' style='background:var(--card);border:1px solid var(--border);border-radius:8px;padding:6px 14px;cursor:pointer;color:var(--muted);font-size:13px;font-family:DM Sans,sans-serif'>← Zurück</button>";
+  h+="<div style='flex:1'><div style='font-family:Bebas Neue;font-size:22px;color:var(--text);letter-spacing:.04em'>Fall "+c.kid+"</div></div>";
+  h+="<span class='sbadge' style='background:"+cfg.b+";color:"+cfg.c+";border:1px solid "+cfg.c+"30'>"+cfg.l+"</span></div>";
+  h+="<div style='background:#0d1117;border:1px solid rgba(249,115,22,.3);border-radius:14px;padding:18px;margin-bottom:16px;border-left:3px solid var(--orange)'>";
+  h+="<div style='font-size:10px;color:var(--orange);font-family:DM Mono,monospace;letter-spacing:.1em;text-transform:uppercase;margin-bottom:12px'>📧 Email-Benachrichtigung</div>";
+  h+="<div class='ebox'>";
+  h+="<span style='color:var(--text)'>Betreff:</span> ⚠️ Achtung Unfall! Neuer Fall "+c.kid+"<br><br>";
+  h+="<span style='color:var(--orange)'>Folgender Kunde braucht euch:</span><br><br>";
+  h+="• <span style='color:var(--text)'>Vor- und Nachname:</span> "+c.vn+" "+c.nn+"<br>";
+  h+="• <span style='color:var(--text)'>Anschrift:</span> "+c.st+", "+c.plz+" "+c.ort+"<br>";
+  h+="• <span style='color:var(--text)'>E-Mail:</span> "+c.em+"<br>";
+  h+="• <span style='color:var(--text)'>Telefon:</span> "+(c.tel||"—")+"<br>";
+  h+="• <span style='color:var(--text)'>Kunden-ID:</span> "+c.kid+"<br>";
+  h+="• <span style='color:var(--text)'>Unfall-Fotos:</span> gesichert<br>";
+  h+="• <span style='color:var(--text)'>Unfallort:</span> "+c.ua+"<br>";
+  h+="• <span style='color:var(--text)'>Datum & Uhrzeit:</span> "+c.ud+" um "+c.ut+" Uhr<br>";
+  h+="• <span style='color:var(--text)'>Fahrzeugnummer:</span> "+c.kfz+"<br>";
+  h+="• <span style='color:var(--text)'>FIN:</span> "+(c.fin||"—");
+  h+="</div></div>";
+  h+="<div class='card'><div class='lbl'>KI-Erstschätzung (konservativ)</div>";
+  h+="<div style='font-family:Bebas Neue;font-size:32px;color:var(--text);letter-spacing:.02em'>"+(c.smin||0).toLocaleString("de")+" – "+(c.smax||0).toLocaleString("de")+" €</div>";
+  h+="<div style='font-size:11px;color:var(--muted);margin-top:4px'>Bereiche: "+(c.sb?c.sb.join(", "):"—")+"</div>";
+  h+="<div style='font-size:11px;color:var(--orange);margin-top:6px'>⬆️ Gutachter ermittelt den vollen Anspruch</div></div>";
+  h+="<div class='card'><div class='lbl'>Unfallort</div>";
+  h+="<div style='color:var(--text);font-size:14px;margin-bottom:8px;font-weight:500'>"+c.ua+"</div>";
+  h+="<a href='https://www.google.com/maps?q="+c.ulat+","+c.ulng+"' target='_blank' style='display:inline-block;font-size:12px;color:var(--blue);text-decoration:none'>📍 In Google Maps öffnen ↗</a></div>";
+  h+="<div class='card'><div class='lbl'>Status aktualisieren</div>";
+  h+="<div style='display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px'>";
+  Object.keys(SC).forEach(function(k){
+    var v=SC[k];
+    h+="<button onclick='updSt(\""+c.id+"\",\""+k+"\")' style='padding:10px;border-radius:10px;border:1px solid "+(c.status===k?v.c:"var(--border)")+";background:"+(c.status===k?v.b:"transparent")+";color:"+(c.status===k?v.c:"var(--muted)")+";font-size:12px;font-weight:600;cursor:pointer;font-family:DM Sans,sans-serif'>"+v.l+"</button>";
+  });
+  h+="</div><textarea id='nI' placeholder='Notiz hinzufügen…' rows='2' style='width:100%;background:#0d1117;border:1px solid var(--border);border-radius:10px;padding:10px 12px;color:var(--text);font-size:13px;font-family:DM Sans,sans-serif;resize:none;outline:none'>"+(c.notiz||"")+"</textarea></div></div>";
+  det.innerHTML=h;
+}
+function clCase(){ document.getElementById("cDet").classList.add("hidden"); document.getElementById("cList").classList.remove("hidden"); }
+function updSt(id,ns){
+  var n=document.getElementById("nI")?document.getElementById("nI").value:"";
+  cases=cases.map(function(c){return c.id===id?Object.assign({},c,{status:ns,notiz:n||c.notiz}):c;});
+  rStats(); rTabs(); oCase(id);
+}
+
+init();
+</script>
+</body>
+</html>
